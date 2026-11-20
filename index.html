@@ -204,7 +204,6 @@
       <!-- 4. VIEW: JADWAL & ABSENSI RONDA (KETUA RT & SEKRETARIS) -->
       <section id="view-ronda" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Buat Jadwal Ronda -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-calendar-alt text-emerald-600 mr-2"></i>Buat Jadwal Ronda</h3>
             <form onsubmit="saveJadwalRonda(event)" class="space-y-3">
@@ -220,7 +219,6 @@
             </form>
           </div>
 
-          <!-- Absensi Kehadiran Ronda -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-user-check text-blue-600 mr-2"></i>Absensi Kehadiran Ronda</h3>
             <form onsubmit="saveAbsenRonda(event)" class="space-y-3">
@@ -236,7 +234,6 @@
           </div>
         </div>
 
-        <!-- Tabel Jadwal Ronda -->
         <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
           <div class="p-4 border-b font-bold">Daftar Jadwal Ronda Aktif</div>
           <table class="w-full text-left text-sm">
@@ -264,7 +261,6 @@
       <!-- 6. VIEW: JADWAL & ABSENSI RAPAT (KETUA RT & SEKRETARIS) -->
       <section id="view-rapat" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Buat Jadwal Rapat (Sekretaris & Ketua RT) -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-bullhorn text-emerald-600 mr-2"></i>Buat Jadwal Kegiatan Rapat</h3>
             <form onsubmit="saveJadwalRapat(event)" class="space-y-3">
@@ -278,7 +274,6 @@
             </form>
           </div>
 
-          <!-- Absen Kehadiran Rapat & Warga (Ketua RT) -->
           <div id="boxAbsenRapat" class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-clipboard-check text-indigo-600 mr-2"></i>Absen Kehadiran Rapat & Warga</h3>
             <form onsubmit="saveAbsenRapat(event)" class="space-y-3">
@@ -315,7 +310,6 @@
       <!-- 7. VIEW: BENDAHARA - REKENING & INPUT IURAN KUITANSI WA -->
       <section id="view-bendahara-iuran" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Setting Rekening Transfer -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-university text-blue-600 mr-2"></i>Rekening Transfer Iuran (Tampil di Warga)</h3>
             <form onsubmit="saveRekening(event)" class="space-y-3">
@@ -326,7 +320,6 @@
             </form>
           </div>
 
-          <!-- Input Pembayaran & Terbitkan Kuitansi -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-receipt text-emerald-600 mr-2"></i>Terima Iuran & Terbitkan Kuitansi</h3>
             <form onsubmit="saveIuranBendahara(event)" class="space-y-3">
@@ -375,7 +368,6 @@
       <!-- 9. VIEW: BAYAR IURAN TRANSFER WARGA -->
       <section id="view-warga-bayar" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Info Rekening dari Bendahara -->
           <div class="bg-gradient-to-br from-emerald-700 to-teal-900 text-white p-6 rounded-2xl shadow-lg">
             <p class="text-xs uppercase tracking-wider text-emerald-200 font-bold">Rekening Resmi Kas RT</p>
             <h3 id="wInfoBank" class="text-2xl font-extrabold mt-2">BANK BRI</h3>
@@ -387,7 +379,6 @@
             <p class="text-xs text-emerald-100"><i class="fas fa-info-circle mr-1"></i> Silakan transfer sesuai nominal iuran bulanan, lalu konfirmasi pada formulir di samping untuk menerbitkan struk bukti pembayaran.</p>
           </div>
 
-          <!-- Form Konfirmasi Transfer Warga -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-money-bill-wave text-emerald-600 mr-2"></i>Konfirmasi Pembayaran Transfer</h3>
             <form onsubmit="saveIuranWarga(event)" class="space-y-3">
@@ -429,18 +420,18 @@
 
   <script>
     // =========================================================================
-    // KONFIGURASI API (Isi URL Web App Apps Script jika di-host di GitHub)
+    // TEMPELKAN URL WEB APP (/exec) GOOGLE APPS SCRIPT ANDA DI BAWAH INI:
     // =========================================================================
-    const GAS_API_URL = ""; // Contoh: "https://script.google.com/macros/s/AKfycbykGoQtIBw_GaFMSILafy6a-7xe31XeOy6RfqCr8hsSmglfElSe3IvB-lHkJgoipL46/exec"
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbykGoQtIBw_GaFMSILafy6a-7xe31XeOy6RfqCr8hsSmglfElSe3IvB-lHkJgoipL46/exec";
 
     let currentUser = null;
     let db = {};
 
-    // BRIDGE KOMUNIKASI (Otomatis deteksi Apps Script Internal vs GitHub Fetch API)
+    // KOMUNIKASI API ANTI-CORS (GET JSON PAYLOAD)
     function callBackend(action, payload = {}) {
       document.getElementById('loader').style.display = 'flex';
       return new Promise((resolve, reject) => {
-        if (typeof google !== 'undefined' && google.script && google.script.run && !GAS_API_URL) {
+        if (typeof google !== 'undefined' && google.script && google.script.run && (!GAS_API_URL || GAS_API_URL === "TEMPEL_URL_EXEC_ANDA_DISINI")) {
           google.script.run
             .withSuccessHandler(res => { document.getElementById('loader').style.display = 'none'; resolve(res); })
             .withFailureHandler(err => { document.getElementById('loader').style.display = 'none'; alert(err); reject(err); })
@@ -448,13 +439,32 @@
               ...(action === 'login' ? [payload.username, payload.password] : [payload])
             );
         } else {
-          fetch(GAS_API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: action, payload: payload })
-          })
-          .then(r => r.json())
-          .then(res => { document.getElementById('loader').style.display = 'none'; resolve(res); })
-          .catch(err => { document.getElementById('loader').style.display = 'none'; alert('Koneksi API Gagal: ' + err); reject(err); });
+          if (!GAS_API_URL || GAS_API_URL === "TEMPEL_URL_EXEC_ANDA_DISINI") {
+            document.getElementById('loader').style.display = 'none';
+            alert("URL Google Apps Script belum diisi pada variabel GAS_API_URL di index.html!");
+            return reject("Missing GAS_API_URL");
+          }
+
+          const url = `${GAS_API_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(payload))}`;
+          
+          fetch(url, { method: 'GET', redirect: 'follow' })
+            .then(r => r.text())
+            .then(text => {
+              document.getElementById('loader').style.display = 'none';
+              try {
+                const res = JSON.parse(text);
+                resolve(res);
+              } catch (e) {
+                console.error("Respon mentah dari Google:", text);
+                alert("Gagal membaca JSON dari Google. Pastikan Anda sudah memilih 'New Version' saat Deploy di Apps Script!");
+                reject(e);
+              }
+            })
+            .catch(err => {
+              document.getElementById('loader').style.display = 'none';
+              alert('Koneksi jaringan gagal: ' + err);
+              reject(err);
+            });
         }
       });
     }
@@ -528,13 +538,11 @@
         );
       }
 
-      // Batasi pilihan Role pada Form Tambah Akun (Sekretaris hanya bisa tambah Warga)
       const roleSelect = document.getElementById('uRole');
       roleSelect.innerHTML = role === 'Admin'
         ? `<option value="Ketua RT">Ketua RT</option><option value="Sekretaris">Sekretaris</option><option value="Bendahara">Bendahara</option><option value="Warga">Warga</option><option value="Admin">Admin</option>`
         : `<option value="Warga">Warga</option>`;
 
-      // Sembunyikan form input diskusi jika Ketua RT (Ketua RT fokus membalas)
       document.getElementById('boxInputDiskusi').classList.toggle('hidden', role === 'Ketua RT');
       document.getElementById('boxAbsenRapat').classList.toggle('hidden', role === 'Sekretaris');
 
@@ -564,10 +572,12 @@
     // MUAT & RENDER SEMUA DATA
     async function fetchAllData() {
       const res = await callBackend('getAllData');
-      if (res.status !== 'success') return;
+      if (res.status !== 'success') {
+        alert(res.message || 'Gagal mengambil data');
+        return;
+      }
       db = res;
 
-      // Profil & Rekening
       const p = db.profil || {};
       document.getElementById('sideLogo').src = p.Logo_URL || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png';
       document.getElementById('sideNamaRT').innerText = p.Nama_RT || 'RT DIGITAL';
@@ -587,7 +597,6 @@
       document.getElementById('wInfoRek').innerText = p.No_Rekening || '-';
       document.getElementById('wInfoAN').innerText = 'a.n. ' + (p.Atas_Nama || '-');
 
-      // Tabel Users & Dropdown Bendahara
       document.getElementById('tblUsers').innerHTML = db.users.map(u => `
         <tr><td class="p-3 font-bold">${u.Nama}</td><td class="p-3">${u.Username}</td><td class="p-3"><span class="px-2 py-1 bg-slate-100 rounded text-xs font-bold">${u.Role}</span></td><td class="p-3">${u.No_WA}</td><td class="p-3">${u.Blok_Rumah}</td></tr>
       `).join('');
@@ -595,12 +604,10 @@
       const wargaList = db.users.filter(u => u.Role === 'Warga');
       document.getElementById('bWargaSelect').innerHTML = `<option value="">-- Pilih Nama Warga --</option>` + wargaList.map(w => `<option value="${w.Nama}" data-wa="${w.No_WA}">${w.Nama} (${w.Blok_Rumah})</option>`).join('');
 
-      // Tabel Penduduk
       document.getElementById('tblPenduduk').innerHTML = db.penduduk.map(d => `
         <tr><td class="p-3 font-mono text-xs">${d.NIK}</td><td class="p-3 font-mono text-xs">${d.No_KK}</td><td class="p-3 font-bold">${d.Nama_Lengkap}</td><td class="p-3">${d.JK}</td><td class="p-3">${d.Status_Keluarga}</td><td class="p-3">${d.Alamat}</td></tr>
       `).join('');
 
-      // Jadwal & Absen Ronda
       document.getElementById('tblJadwalRonda').innerHTML = db.jadwalRonda.map(r => `
         <tr><td class="p-3 font-bold">${r.Hari}, ${r.Tanggal}</td><td class="p-3">${r.Petugas_1}</td><td class="p-3">${r.Petugas_2}</td><td class="p-3">${r.Petugas_3 || '-'}</td><td class="p-3 text-slate-500">${r.Keterangan}</td></tr>
       `).join('');
@@ -609,7 +616,6 @@
         <tr><td class="p-3">${a.Tanggal}</td><td class="p-3 font-bold">${a.Nama_Petugas}</td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${a.Status === 'Hadir' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${a.Status}</span></td><td class="p-3 text-slate-500">${a.Dicatat_Oleh}</td></tr>
       `).join('');
 
-      // Jadwal & Absen Rapat
       document.getElementById('tblJadwalRapat').innerHTML = db.jadwalRapat.map(rp => `
         <tr><td class="p-3 font-bold">${rp.Tanggal} (${rp.Waktu})</td><td class="p-3">${rp.Agenda}</td><td class="p-3">${rp.Tempat}</td></tr>
       `).join('');
@@ -620,7 +626,6 @@
         <tr><td class="p-3 font-medium">${ar.Agenda}</td><td class="p-3 font-bold">${ar.Nama_Warga}</td><td class="p-3"><span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-bold">${ar.Status}</span></td></tr>
       `).join('');
 
-      // Render Iuran & Diskusi
       renderRekapIuran();
       renderDiskusi();
     }
@@ -658,7 +663,6 @@
         </tr>
       `).join('');
 
-      // Riwayat khusus Warga login
       const myIuran = db.iuran.filter(i => i.Nama_Warga === currentUser.Nama);
       document.getElementById('tblIuranWarga').innerHTML = myIuran.map(i => `
         <tr>
