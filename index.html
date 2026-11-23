@@ -30,7 +30,7 @@
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
       <div id="printArea" class="p-6 bg-white border-b border-dashed border-slate-300">
         <div class="flex items-center gap-3 border-b pb-4 mb-4">
-          <img id="kLogo" crossorigin="anonymous" src="" class="w-12 h-12 rounded-lg object-cover bg-slate-100">
+          <img id="kLogo" src="" class="w-12 h-12 rounded-lg object-cover bg-slate-100">
           <div>
             <h3 id="kNamaRT" class="font-bold text-lg text-slate-800">RT DIGITAL</h3>
             <p id="kAlamatRT" class="text-xs text-slate-500">Desa / Kelurahan</p>
@@ -143,7 +143,7 @@
         </div>
       </header>
 
-      <!-- VIEW UNIVERSAL: REKAP ARUS KAS (PEMASUKAN & PENGELUARAN - TAMPIL DI SEMUA AKUN) -->
+      <!-- VIEW UNIVERSAL: REKAP ARUS KAS -->
       <section id="view-arus-kas" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="bg-white p-5 rounded-2xl border-l-4 border-emerald-500 shadow-xs">
@@ -215,19 +215,30 @@
         </div>
       </section>
 
-      <!-- 1. VIEW: PROFIL & LOGO DESA (ADMIN) -->
+      <!-- 1. VIEW: PROFIL & UNGGAH FOTO LOGO DESA (ADMIN) -->
       <section id="view-profil" class="view-panel hidden space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-xs border max-w-2xl">
-          <h3 class="font-bold text-lg mb-4 text-slate-800"><i class="fas fa-building text-emerald-600 mr-2"></i>Identitas & Logo RT / Desa</h3>
+          <h3 class="font-bold text-lg mb-4 text-slate-800"><i class="fas fa-building text-emerald-600 mr-2"></i>Identitas & Unggah Logo RT / Desa</h3>
           <form onsubmit="saveProfil(event)" class="space-y-4">
+            <div class="flex flex-col sm:flex-row items-center gap-4 p-4 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+              <img id="previewLogo" src="https://cdn-icons-png.flaticon.com/512/1041/1041916.png" class="w-20 h-20 rounded-2xl object-cover bg-white border shadow-xs shrink-0">
+              <div class="flex-1 w-full">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Unggah Foto Logo Desa / RT (JPG, PNG, WEBP)</label>
+                <input type="file" id="pLogoFile" accept="image/*" onchange="handleLogoUpload(event)" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                <p class="text-[11px] text-slate-400 mt-1.5"><i class="fas fa-magic text-emerald-600 mr-1"></i>Foto otomatis dioptimalkan agar ringan dan langsung tampil di kuitansi maupun sidebar.</p>
+                <input type="hidden" id="pLogoBase64">
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div><label class="text-xs font-bold text-slate-600">Nama RT / RW</label><input type="text" id="pNamaRT" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
               <div><label class="text-xs font-bold text-slate-600">Desa / Kelurahan</label><input type="text" id="pDesa" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
               <div><label class="text-xs font-bold text-slate-600">Kecamatan</label><input type="text" id="pKec" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
-              <div><label class="text-xs font-bold text-slate-600">URL Logo Desa/RT</label><input type="url" id="pLogo" required class="w-full mt-1 px-3 py-2 border rounded-lg" placeholder="https://..."></div>
+              <div><label class="text-xs font-bold text-slate-600">Alamat Sekretariat RT</label><input type="text" id="pAlamat" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
             </div>
-            <div><label class="text-xs font-bold text-slate-600">Alamat Sekretariat RT</label><input type="text" id="pAlamat" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
-            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-semibold text-sm">Simpan Profil & Logo</button>
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-semibold text-sm shadow-sm">
+              <i class="fas fa-save mr-1"></i> Simpan Profil & Foto Logo
+            </button>
           </form>
         </div>
       </section>
@@ -387,7 +398,7 @@
         </div>
       </section>
 
-      <!-- 7. VIEW: BENDAHARA - PEMASUKAN (IURAN, SUMBANGAN, DENDA) & PENGELUARAN -->
+      <!-- 7. VIEW: BENDAHARA - PEMASUKAN & PENGELUARAN -->
       <section id="view-bendahara-iuran" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
@@ -554,19 +565,31 @@
 
   <script>
     // =========================================================================
-    // URL WEB APP GOOGLE APPS SCRIPT ANDA (SUDAH TERPASANG BENAR)
+    // URL WEB APP GOOGLE APPS SCRIPT ANDA
     // =========================================================================
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbykGoQtIBw_GaFMSILafy6a-7xe31XeOy6RfqCr8hsSmglfElSe3IvB-lHkJgoipL46/exec";
 
     let currentUser = null;
     let db = {};
 
-    function callBackend(action, payload = {}) {
+    // HYBRID API BRIDGE: POST otomatis untuk data foto Base64, GET untuk transaksi cepat
+    function callBackend(action, payload = {}, usePost = false) {
       document.getElementById('loader').style.display = 'flex';
       return new Promise((resolve, reject) => {
-        const url = `${GAS_API_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(payload))}`;
-        
-        fetch(url, { method: 'GET', redirect: 'follow' })
+        const fetchOptions = usePost
+          ? {
+              method: 'POST',
+              redirect: 'follow',
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+              body: JSON.stringify({ action: action, payload: payload })
+            }
+          : { method: 'GET', redirect: 'follow' };
+
+        const targetUrl = usePost
+          ? GAS_API_URL
+          : `${GAS_API_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(payload))}`;
+
+        fetch(targetUrl, fetchOptions)
           .then(r => r.text())
           .then(text => {
             document.getElementById('loader').style.display = 'none';
@@ -588,6 +611,46 @@
     }
 
     const rp = (n) => 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
+
+    // KOMPRESI OTOMATIS FOTO LOGO KE BASE64 RINGAN (150x150px)
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxDim = 150;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxDim) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            }
+          } else {
+            if (height > maxDim) {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedBase64 = canvas.toDataURL('image/png', 0.85);
+          document.getElementById('previewLogo').src = compressedBase64;
+          document.getElementById('pLogoBase64').value = compressedBase64;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
 
     // LOGIN & LOGOUT
     async function handleLogin(e) {
@@ -702,7 +765,11 @@
       db = res;
 
       const p = db.profil || {};
-      document.getElementById('sideLogo').src = p.Logo_URL || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png';
+      const currentLogo = p.Logo_URL || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png';
+      document.getElementById('sideLogo').src = currentLogo;
+      document.getElementById('previewLogo').src = currentLogo;
+      document.getElementById('pLogoBase64').value = currentLogo;
+
       document.getElementById('sideNamaRT').innerText = p.Nama_RT || 'RT DIGITAL';
       document.getElementById('sideDesa').innerText = p.Desa_Kelurahan || '';
 
@@ -710,7 +777,6 @@
       document.getElementById('pDesa').value = p.Desa_Kelurahan || '';
       document.getElementById('pKec').value = p.Kecamatan || '';
       document.getElementById('pAlamat').value = p.Alamat_Kantor || '';
-      document.getElementById('pLogo').value = p.Logo_URL || '';
 
       document.getElementById('rekBank').value = p.Nama_Bank || '';
       document.getElementById('rekNomor').value = p.No_Rekening || '';
@@ -928,15 +994,17 @@
       }
     }
 
+    // SIMPAN PROFIL & FOTO LOGO (Menggunakan POST agar data gambar Base64 aman)
     async function saveProfil(e) {
       e.preventDefault();
-      await callBackend('updateProfil', {
+      const res = await callBackend('updateProfil', {
         Nama_RT: document.getElementById('pNamaRT').value,
         Desa_Kelurahan: document.getElementById('pDesa').value,
         Kecamatan: document.getElementById('pKec').value,
         Alamat_Kantor: document.getElementById('pAlamat').value,
-        Logo_URL: document.getElementById('pLogo').value
-      });
+        Logo_URL: document.getElementById('pLogoBase64').value
+      }, true);
+      alert(res.message || 'Profil & Foto Logo berhasil disimpan!');
       fetchAllData();
     }
 
@@ -953,7 +1021,7 @@
 
     async function saveUser(e) {
       e.preventDefault();
-      await callBackend('addUser', {
+      const res = await callBackend('addUser', {
         Nama: document.getElementById('uNama').value,
         Username: document.getElementById('uUser').value,
         Password: document.getElementById('uPass').value,
@@ -961,6 +1029,10 @@
         No_WA: document.getElementById('uWA').value,
         Blok_Rumah: document.getElementById('uBlok').value
       });
+      if (res.status === 'error') {
+        alert(res.message);
+        return;
+      }
       e.target.reset();
       fetchAllData();
     }
