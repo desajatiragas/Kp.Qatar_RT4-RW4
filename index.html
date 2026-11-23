@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Informasi RT Digital</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     @media print {
@@ -24,25 +25,26 @@
     </div>
   </div>
 
-  <!-- MODAL KUITANSI / STRUK DIGITAL -->
+  <!-- MODAL KUITANSI / STRUK DIGITAL (BISA UNDUH GAMBAR PNG & KIRIM WA) -->
   <div id="modalKuitansi" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-40 p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-      <div id="printArea" class="p-6 border-b border-dashed border-slate-300">
+      <div id="printArea" class="p-6 bg-white border-b border-dashed border-slate-300">
         <div class="flex items-center gap-3 border-b pb-4 mb-4">
-          <img id="kLogo" src="" class="w-12 h-12 rounded-lg object-cover bg-slate-100">
+          <img id="kLogo" crossorigin="anonymous" src="" class="w-12 h-12 rounded-lg object-cover bg-slate-100">
           <div>
             <h3 id="kNamaRT" class="font-bold text-lg text-slate-800">RT DIGITAL</h3>
             <p id="kAlamatRT" class="text-xs text-slate-500">Desa / Kelurahan</p>
           </div>
         </div>
         <div class="text-center mb-4">
-          <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full uppercase tracking-wider">Bukti Pembayaran Sah</span>
+          <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full uppercase tracking-wider">Kuitansi Pembayaran Sah</span>
           <h4 id="kNo" class="font-mono text-sm text-slate-500 mt-1">KWT-000000</h4>
         </div>
         <div class="space-y-2 text-sm">
           <div class="flex justify-between"><span class="text-slate-500">Tanggal Bayar:</span><span id="kTgl" class="font-medium"></span></div>
-          <div class="flex justify-between"><span class="text-slate-500">Nama Warga:</span><span id="kWarga" class="font-bold"></span></div>
-          <div class="flex justify-between"><span class="text-slate-500">Periode Iuran:</span><span id="kBulan" class="font-medium"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">Nama Pembayar:</span><span id="kWarga" class="font-bold"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">Jenis / Keterangan:</span><span id="kJenis" class="font-semibold text-right max-w-[200px]"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">Periode:</span><span id="kBulan" class="font-medium"></span></div>
           <div class="flex justify-between"><span class="text-slate-500">Metode Bayar:</span><span id="kMetode" class="font-medium"></span></div>
           <div class="flex justify-between"><span class="text-slate-500">Diterima Oleh:</span><span id="kPenerima" class="font-medium"></span></div>
           <div class="border-t pt-3 mt-3 flex justify-between items-center">
@@ -50,15 +52,21 @@
             <span id="kNominal" class="text-xl font-extrabold text-emerald-600">Rp 0</span>
           </div>
         </div>
+        <div class="mt-4 pt-2 border-t border-slate-100 text-center text-[11px] text-slate-400">
+          Dokumen ini diterbitkan secara elektronik oleh Sistem Informasi RT
+        </div>
       </div>
-      <div class="p-4 bg-slate-50 flex flex-wrap gap-2 justify-end">
-        <a id="btnKirimWA" href="#" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-2 px-3 rounded-lg text-sm font-semibold">
-          <i class="fab fa-whatsapp mr-1"></i> Kirim ke WA Pembayar
-        </a>
-        <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white py-2 px-3 rounded-lg text-sm font-semibold">
-          <i class="fas fa-print"></i> Cetak
+      <div class="p-4 bg-slate-50 grid grid-cols-2 gap-2">
+        <button onclick="downloadKuitansiGambar()" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1">
+          <i class="fas fa-image"></i> Simpan Gambar (PNG)
         </button>
-        <button onclick="closeKuitansi()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-2 px-3 rounded-lg text-sm font-semibold">
+        <a id="btnKirimWA" href="#" target="_blank" class="bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1">
+          <i class="fab fa-whatsapp"></i> Kirim ke WA Pembayar
+        </a>
+        <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1">
+          <i class="fas fa-print"></i> Cetak PDF / Print
+        </button>
+        <button onclick="closeKuitansi()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-2 px-3 rounded-lg text-xs font-semibold">
           Tutup
         </button>
       </div>
@@ -78,7 +86,7 @@
       <form onsubmit="handleLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Username</label>
-          <input type="text" id="loginUser" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="admin / ketua / sekretaris / bendahara / warga1">
+          <input type="text" id="loginUser" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Masukkan username">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
@@ -113,7 +121,7 @@
         </div>
       </div>
 
-      <!-- MENU NAVIGASI DINAMIS BERDASARKAN ROLE -->
+      <!-- MENU NAVIGASI DINAMIS -->
       <nav id="sidebarMenu" class="flex-1 p-3 space-y-1 overflow-y-auto"></nav>
 
       <div class="p-4 border-t border-slate-800 space-y-2">
@@ -131,9 +139,83 @@
       <header class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-2 border-b pb-4">
         <div>
           <h1 id="pageTitle" class="text-2xl font-extrabold text-slate-800">Dashboard</h1>
-          <p id="pageSubtitle" class="text-sm text-slate-500">Selamat datang di sistem pelayanan lingkungan RT</p>
+          <p id="pageSubtitle" class="text-sm text-slate-500">Sistem Informasi & Transparansi Keuangan RT</p>
         </div>
       </header>
+
+      <!-- VIEW UNIVERSAL: REKAP ARUS KAS (PEMASUKAN & PENGELUARAN - TAMPIL DI SEMUA AKUN) -->
+      <section id="view-arus-kas" class="view-panel hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border-l-4 border-emerald-500 shadow-xs">
+            <p class="text-xs font-bold uppercase text-slate-400">Total Pemasukan Kas</p>
+            <h3 id="akMasuk" class="text-2xl font-extrabold text-emerald-600 mt-1">Rp 0</h3>
+            <p class="text-[11px] text-slate-400 mt-1">Iuran Warga, Sumbangan & Denda</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border-l-4 border-rose-500 shadow-xs">
+            <p class="text-xs font-bold uppercase text-slate-400">Total Pengeluaran Kas</p>
+            <h3 id="akKeluar" class="text-2xl font-extrabold text-rose-600 mt-1">Rp 0</h3>
+            <p class="text-[11px] text-slate-400 mt-1">Operasional & Kegiatan Lingkungan</p>
+          </div>
+          <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-md">
+            <p class="text-xs font-bold uppercase text-emerald-400">Saldo Akhir Kas RT</p>
+            <h3 id="akSaldo" class="text-2xl font-extrabold mt-1">Rp 0</h3>
+            <p class="text-[11px] text-slate-400 mt-1">Transparansi Keuangan Real-Time</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Tabel Pemasukan -->
+          <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
+            <div class="p-4 border-b font-bold text-emerald-700 flex items-center gap-2">
+              <i class="fas fa-arrow-down"></i> Rincian Kas Masuk (Iuran, Sumbangan, Denda)
+            </div>
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b uppercase text-slate-500">
+                <tr><th class="p-3">Tanggal</th><th class="p-3">Nama</th><th class="p-3">Jenis</th><th class="p-3">Nominal</th></tr>
+              </thead>
+              <tbody id="tblAkMasuk" class="divide-y"></tbody>
+            </table>
+          </div>
+
+          <!-- Tabel Pengeluaran -->
+          <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
+            <div class="p-4 border-b font-bold text-rose-700 flex items-center gap-2">
+              <i class="fas fa-arrow-up"></i> Rincian Kas Keluar (Pengeluaran)
+            </div>
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b uppercase text-slate-500">
+                <tr><th class="p-3">Tanggal</th><th class="p-3">Kategori</th><th class="p-3">Keterangan</th><th class="p-3">Nominal</th></tr>
+              </thead>
+              <tbody id="tblAkKeluar" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW UNIVERSAL: UBAH PASSWORD MANDIRI -->
+      <section id="view-password" class="view-panel hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow-xs border max-w-md">
+          <h3 class="font-bold text-lg mb-2 text-slate-800"><i class="fas fa-key text-emerald-600 mr-2"></i>Ubah Password Akun Saya</h3>
+          <p class="text-xs text-slate-500 mb-4">Amankan akun Anda dengan memperbarui password secara berkala.</p>
+          <form onsubmit="saveNewPassword(event)" class="space-y-4">
+            <div>
+              <label class="text-xs font-bold text-slate-600">Password Lama</label>
+              <input type="password" id="pwdOld" required class="w-full mt-1 px-3 py-2 border rounded-lg" placeholder="Masukkan password saat ini">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">Password Baru</label>
+              <input type="password" id="pwdNew" required class="w-full mt-1 px-3 py-2 border rounded-lg" placeholder="Masukkan password baru">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">Konfirmasi Password Baru</label>
+              <input type="password" id="pwdConfirm" required class="w-full mt-1 px-3 py-2 border rounded-lg" placeholder="Ulangi password baru">
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg font-bold text-sm">
+              Simpan Password Baru
+            </button>
+          </form>
+        </div>
+      </section>
 
       <!-- 1. VIEW: PROFIL & LOGO DESA (ADMIN) -->
       <section id="view-profil" class="view-panel hidden space-y-6">
@@ -307,33 +389,90 @@
         </div>
       </section>
 
-      <!-- 7. VIEW: BENDAHARA - REKENING & INPUT IURAN KUITANSI WA -->
+      <!-- 7. VIEW: BENDAHARA - PEMASUKAN (IURAN, SUMBANGAN, DENDA) & PENGELUARAN -->
       <section id="view-bendahara-iuran" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Form Pemasukan: Iuran, Sumbangan, Denda -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
-            <h3 class="font-bold text-lg mb-4"><i class="fas fa-university text-blue-600 mr-2"></i>Rekening Transfer Iuran (Tampil di Warga)</h3>
-            <form onsubmit="saveRekening(event)" class="space-y-3">
-              <input type="text" id="rekBank" required placeholder="Nama Bank (misal: Bank BRI / BCA / DANA)" class="w-full px-3 py-2 border rounded-lg">
-              <input type="text" id="rekNomor" required placeholder="Nomor Rekening" class="w-full px-3 py-2 border rounded-lg">
-              <input type="text" id="rekNama" required placeholder="Atas Nama Pemilik Rekening" class="w-full px-3 py-2 border rounded-lg">
-              <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold">Update Rekening Pembayaran</button>
-            </form>
-          </div>
-
-          <div class="bg-white p-6 rounded-2xl shadow-xs border">
-            <h3 class="font-bold text-lg mb-4"><i class="fas fa-receipt text-emerald-600 mr-2"></i>Terima Iuran & Terbitkan Kuitansi</h3>
+            <h3 class="font-bold text-lg mb-4"><i class="fas fa-hand-holding-usd text-emerald-600 mr-2"></i>Terima Pemasukan & Kuitansi Gambar</h3>
             <form onsubmit="saveIuranBendahara(event)" class="space-y-3">
-              <select id="bWargaSelect" onchange="autoFillWA()" required class="w-full px-3 py-2 border rounded-lg"></select>
+              <div>
+                <label class="text-xs font-bold text-slate-600">Jenis Pemasukan</label>
+                <select id="bJenisMasuk" class="w-full mt-1 px-3 py-2 border rounded-lg font-semibold text-emerald-700">
+                  <option value="Iuran Wajib Warga">Iuran Wajib Warga</option>
+                  <option value="Sumbangan / Donasi">Sumbangan / Donasi</option>
+                  <option value="Denda (Ronda / Keterlambatan)">Denda (Ronda / Keterlambatan)</option>
+                </select>
+              </div>
               <div class="grid grid-cols-2 gap-3">
-                <input type="text" id="bNoWA" required placeholder="No. WA Pembayar (628...)" class="px-3 py-2 border rounded-lg">
+                <div>
+                  <label class="text-xs font-bold text-slate-600">Pilih Warga (Opsional)</label>
+                  <select id="bWargaSelect" onchange="autoFillWA()" class="w-full mt-1 px-3 py-2 border rounded-lg"></select>
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-slate-600">Nama Pembayar / Donatur</label>
+                  <input type="text" id="bNamaPembayar" required placeholder="Nama pembayar" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <input type="text" id="bNoWA" required placeholder="No. WA (628...)" class="px-3 py-2 border rounded-lg">
                 <input type="month" id="bBulan" required class="px-3 py-2 border rounded-lg">
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <input type="number" id="bNominal" required placeholder="Nominal (Rp)" value="50000" class="px-3 py-2 border rounded-lg">
+                <input type="number" id="bNominal" required placeholder="Nominal (Rp)" class="px-3 py-2 border rounded-lg">
                 <select id="bMetode" class="px-3 py-2 border rounded-lg"><option value="Tunai">Tunai</option><option value="Transfer Bank">Transfer Bank</option></select>
               </div>
-              <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold">Simpan & Buka Kuitansi WA</button>
+              <input type="text" id="bKetMasuk" placeholder="Keterangan tambahan (misal: Denda tidak ronda / Donasi 17an)" class="w-full px-3 py-2 border rounded-lg">
+              <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg font-semibold">
+                Simpan Pemasukan & Buat Kuitansi Gambar
+              </button>
             </form>
+          </div>
+
+          <!-- Form Pengeluaran Kas Manual -->
+          <div class="bg-white p-6 rounded-2xl shadow-xs border">
+            <h3 class="font-bold text-lg mb-4"><i class="fas fa-shopping-cart text-rose-600 mr-2"></i>Catat Pengeluaran Kas Manual</h3>
+            <form onsubmit="savePengeluaranManual(event)" class="space-y-3">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-xs font-bold text-slate-600">Tanggal Pengeluaran</label>
+                  <input type="date" id="outTgl" required class="w-full mt-1 px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-slate-600">Kategori Pengeluaran</label>
+                  <select id="outKategori" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                    <option value="Operasional & ATK RT">Operasional & ATK RT</option>
+                    <option value="Kebersihan & Sampah">Kebersihan & Sampah</option>
+                    <option value="Keamanan & Pos Ronda">Keamanan & Pos Ronda</option>
+                    <option value="Perbaikan Fasilitas">Perbaikan Fasilitas</option>
+                    <option value="Kegiatan Sosial / Rapat">Kegiatan Sosial / Rapat</option>
+                    <option value="Lain-lain">Lain-lain</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-slate-600">Uraian / Keterangan Pengeluaran</label>
+                <input type="text" id="outKet" required placeholder="Contoh: Beli lampu jalan gang 2 & konsumsi ronda" class="w-full mt-1 px-3 py-2 border rounded-lg">
+              </div>
+              <div>
+                <label class="text-xs font-bold text-slate-600">Nominal Pengeluaran (Rp)</label>
+                <input type="number" id="outNominal" required placeholder="Contoh: 150000" class="w-full mt-1 px-3 py-2 border rounded-lg">
+              </div>
+              <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-lg font-semibold">
+                Catat Pengeluaran Kas
+              </button>
+            </form>
+
+            <!-- Setting Rekening Transfer -->
+            <div class="mt-6 pt-6 border-t">
+              <h4 class="font-bold text-sm mb-3 text-blue-700"><i class="fas fa-university mr-1"></i>Pengaturan Rekening Transfer Warga</h4>
+              <form onsubmit="saveRekening(event)" class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <input type="text" id="rekBank" required placeholder="Bank" class="px-3 py-2 border rounded-lg text-sm">
+                <input type="text" id="rekNomor" required placeholder="No. Rekening" class="px-3 py-2 border rounded-lg text-sm">
+                <input type="text" id="rekNama" required placeholder="Atas Nama" class="px-3 py-2 border rounded-lg text-sm">
+                <button type="submit" class="md:col-span-3 bg-blue-600 text-white py-2 rounded-lg text-xs font-bold">Simpan Rekening</button>
+              </form>
+            </div>
           </div>
         </div>
       </section>
@@ -358,7 +497,7 @@
         <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500">
-              <tr><th class="p-3">No. Kuitansi</th><th class="p-3">Tanggal</th><th class="p-3">Periode</th><th class="p-3">Nama Warga</th><th class="p-3">Nominal</th><th class="p-3">Metode</th><th class="p-3">Struk</th></tr>
+              <tr><th class="p-3">No. Kuitansi</th><th class="p-3">Tanggal</th><th class="p-3">Periode</th><th class="p-3">Nama</th><th class="p-3">Jenis / Ket</th><th class="p-3">Nominal</th><th class="p-3">Kuitansi</th></tr>
             </thead>
             <tbody id="tblIuran" class="divide-y"></tbody>
           </table>
@@ -427,11 +566,10 @@
     let currentUser = null;
     let db = {};
 
-    // KOMUNIKASI API ANTI-CORS (GET JSON PAYLOAD)
     function callBackend(action, payload = {}) {
       document.getElementById('loader').style.display = 'flex';
       return new Promise((resolve, reject) => {
-        if (typeof google !== 'undefined' && google.script && google.script.run && (!GAS_API_URL || GAS_API_URL === "TEMPEL_URL_EXEC_ANDA_DISINI")) {
+        if (typeof google !== 'undefined' && google.script && google.script.run && (!GAS_API_URL || GAS_API_URL === "https://script.google.com/macros/s/AKfycbykGoQtIBw_GaFMSILafy6a-7xe31XeOy6RfqCr8hsSmglfElSe3IvB-lHkJgoipL46/exec")) {
           google.script.run
             .withSuccessHandler(res => { document.getElementById('loader').style.display = 'none'; resolve(res); })
             .withFailureHandler(err => { document.getElementById('loader').style.display = 'none'; alert(err); reject(err); })
@@ -439,7 +577,7 @@
               ...(action === 'login' ? [payload.username, payload.password] : [payload])
             );
         } else {
-          if (!GAS_API_URL || GAS_API_URL === "TEMPEL_URL_EXEC_ANDA_DISINI") {
+          if (!GAS_API_URL || GAS_API_URL === "https://script.google.com/macros/s/AKfycbykGoQtIBw_GaFMSILafy6a-7xe31XeOy6RfqCr8hsSmglfElSe3IvB-lHkJgoipL46/exec") {
             document.getElementById('loader').style.display = 'none';
             alert("URL Google Apps Script belum diisi pada variabel GAS_API_URL di index.html!");
             return reject("Missing GAS_API_URL");
@@ -495,20 +633,24 @@
       document.getElementById('loginPage').classList.remove('hidden');
     }
 
-    // SETUP MENU SIDEBAR KIRI BERDASARKAN ROLE
+    // SETUP MENU SIDEBAR KIRI BERDASARKAN ROLE + ARUS KAS + UBAH PASSWORD
     function setupSidebarByRole() {
       const role = currentUser.Role;
       document.getElementById('sideUserName').innerText = currentUser.Nama;
       document.getElementById('sideUserRole').innerText = role;
       document.getElementById('sideUserBlok').innerText = currentUser.Blok_Rumah;
 
-      const menus = [];
+      // Menu Arus Kas tampil di SEMUA akun
+      const menus = [
+        { id: 'arus-kas', icon: 'fa-chart-pie', label: 'Arus Kas RT (Transparan)' }
+      ];
+
       if (role === 'Admin') {
         menus.push(
           { id: 'akun', icon: 'fa-user-plus', label: 'Daftarkan Akun' },
           { id: 'penduduk', icon: 'fa-users', label: 'Data Penduduk' },
           { id: 'rekap-ronda', icon: 'fa-shield-alt', label: 'Rekap Kehadiran Ronda' },
-          { id: 'rekap-iuran', icon: 'fa-file-invoice-dollar', label: 'Rekap Pembayaran Iuran' },
+          { id: 'rekap-iuran', icon: 'fa-file-invoice-dollar', label: 'Rekap Pemasukan Kas' },
           { id: 'profil', icon: 'fa-image', label: 'Logo & Profil Desa' }
         );
       } else if (role === 'Ketua RT') {
@@ -528,7 +670,7 @@
         );
       } else if (role === 'Bendahara') {
         menus.push(
-          { id: 'bendahara-iuran', icon: 'fa-receipt', label: 'Rekening & Kuitansi WA' },
+          { id: 'bendahara-iuran', icon: 'fa-cash-register', label: 'Kas Masuk, Keluar & Kuitansi' },
           { id: 'rekap-iuran', icon: 'fa-chart-line', label: 'Rekap Bulanan & Tahunan' }
         );
       } else if (role === 'Warga') {
@@ -537,6 +679,9 @@
           { id: 'diskusi', icon: 'fa-comment-dots', label: 'Diskusi ke Ketua RT' }
         );
       }
+
+      // Menu Ubah Password tampil di SEMUA akun
+      menus.push({ id: 'password', icon: 'fa-key', label: 'Ubah Password' });
 
       const roleSelect = document.getElementById('uRole');
       roleSelect.innerHTML = role === 'Admin'
@@ -602,7 +747,7 @@
       `).join('');
 
       const wargaList = db.users.filter(u => u.Role === 'Warga');
-      document.getElementById('bWargaSelect').innerHTML = `<option value="">-- Pilih Nama Warga --</option>` + wargaList.map(w => `<option value="${w.Nama}" data-wa="${w.No_WA}">${w.Nama} (${w.Blok_Rumah})</option>`).join('');
+      document.getElementById('bWargaSelect').innerHTML = `<option value="">-- Pilih Warga / Input Manual --</option>` + wargaList.map(w => `<option value="${w.Nama}" data-wa="${w.No_WA}">${w.Nama} (${w.Blok_Rumah})</option>`).join('');
 
       document.getElementById('tblPenduduk').innerHTML = db.penduduk.map(d => `
         <tr><td class="p-3 font-mono text-xs">${d.NIK}</td><td class="p-3 font-mono text-xs">${d.No_KK}</td><td class="p-3 font-bold">${d.Nama_Lengkap}</td><td class="p-3">${d.JK}</td><td class="p-3">${d.Status_Keluarga}</td><td class="p-3">${d.Alamat}</td></tr>
@@ -626,14 +771,49 @@
         <tr><td class="p-3 font-medium">${ar.Agenda}</td><td class="p-3 font-bold">${ar.Nama_Warga}</td><td class="p-3"><span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-bold">${ar.Status}</span></td></tr>
       `).join('');
 
+      renderArusKas();
       renderRekapIuran();
       renderDiskusi();
     }
 
+    // RENDER ARUS KAS TRANSPARAN (UNTUK SEMUA AKUN)
+    function renderArusKas() {
+      const pemasukanList = db.iuran || [];
+      const pengeluaranList = db.pengeluaran || [];
+
+      const totalMasuk = pemasukanList.reduce((acc, item) => acc + (Number(item.Nominal) || 0), 0);
+      const totalKeluar = pengeluaranList.reduce((acc, item) => acc + (Number(item.Nominal) || 0), 0);
+      const saldo = totalMasuk - totalKeluar;
+
+      document.getElementById('akMasuk').innerText = rp(totalMasuk);
+      document.getElementById('akKeluar').innerText = rp(totalKeluar);
+      document.getElementById('akSaldo').innerText = rp(saldo);
+
+      document.getElementById('tblAkMasuk').innerHTML = pemasukanList.length ? pemasukanList.map(m => `
+        <tr>
+          <td class="p-3">${m.Tanggal}</td>
+          <td class="p-3 font-bold">${m.Nama_Warga}</td>
+          <td class="p-3 text-slate-600">${m.Status}</td>
+          <td class="p-3 font-bold text-emerald-600">+ ${rp(m.Nominal)}</td>
+        </tr>
+      `).join('') : `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada pemasukan kas</td></tr>`;
+
+      document.getElementById('tblAkKeluar').innerHTML = pengeluaranList.length ? pengeluaranList.map(k => `
+        <tr>
+          <td class="p-3">${k.Tanggal}</td>
+          <td class="p-3 font-semibold">${k.Kategori}</td>
+          <td class="p-3 text-slate-600">${k.Keterangan}</td>
+          <td class="p-3 font-bold text-rose-600">- ${rp(k.Nominal)}</td>
+        </tr>
+      `).join('') : `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada pengeluaran kas</td></tr>`;
+    }
+
     function autoFillWA() {
       const sel = document.getElementById('bWargaSelect');
+      const nama = sel.value;
       const wa = sel.options[sel.selectedIndex]?.getAttribute('data-wa') || '';
-      document.getElementById('bNoWA').value = wa;
+      if (nama) document.getElementById('bNamaPembayar').value = nama;
+      if (wa) document.getElementById('bNoWA').value = wa;
     }
 
     function renderRekapIuran() {
@@ -657,9 +837,9 @@
           <td class="p-3">${i.Tanggal}</td>
           <td class="p-3 font-bold">${i.Bulan_Tahun}</td>
           <td class="p-3">${i.Nama_Warga}</td>
+          <td class="p-3 text-xs">${i.Status}</td>
           <td class="p-3 font-bold text-emerald-600">${rp(i.Nominal)}</td>
-          <td class="p-3">${i.Metode}</td>
-          <td class="p-3"><button onclick='bukaKuitansi(${JSON.stringify(i)})' class="px-2.5 py-1 bg-slate-800 text-white rounded text-xs hover:bg-slate-700"><i class="fas fa-receipt mr-1"></i>Lihat</button></td>
+          <td class="p-3"><button onclick='bukaKuitansi(${JSON.stringify(i)})' class="px-2.5 py-1 bg-slate-800 text-white rounded text-xs hover:bg-slate-700"><i class="fas fa-image mr-1"></i>Kuitansi</button></td>
         </tr>
       `).join('');
 
@@ -671,7 +851,7 @@
           <td class="p-3 font-bold">${i.Bulan_Tahun}</td>
           <td class="p-3 font-bold text-emerald-600">${rp(i.Nominal)}</td>
           <td class="p-3"><span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">${i.Status}</span></td>
-          <td class="p-3"><button onclick='bukaKuitansi(${JSON.stringify(i)})' class="px-3 py-1 bg-emerald-600 text-white rounded text-xs font-bold">Struk Bukti</button></td>
+          <td class="p-3"><button onclick='bukaKuitansi(${JSON.stringify(i)})' class="px-3 py-1 bg-emerald-600 text-white rounded text-xs font-bold">Struk Gambar</button></td>
         </tr>
       `).join('');
     }
@@ -703,27 +883,29 @@
       `).join('');
     }
 
-    // MODAL KUITANSI & INTEGRASI WHATSAPP
+    // MODAL KUITANSI & UNDUH GAMBAR PNG
     function bukaKuitansi(k) {
       const p = db.profil || {};
-      document.getElementById('kLogo').src = p.Logo_URL || '';
+      document.getElementById('kLogo').src = p.Logo_URL || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png';
       document.getElementById('kNamaRT').innerText = p.Nama_RT || 'RT DIGITAL';
       document.getElementById('kAlamatRT').innerText = `${p.Desa_Kelurahan || ''} - ${p.Alamat_Kantor || ''}`;
       document.getElementById('kNo').innerText = k.No_Kuitansi;
       document.getElementById('kTgl').innerText = k.Tanggal;
       document.getElementById('kWarga').innerText = k.Nama_Warga;
+      document.getElementById('kJenis').innerText = k.Status || 'Iuran Warga';
       document.getElementById('kBulan').innerText = k.Bulan_Tahun;
       document.getElementById('kMetode').innerText = k.Metode;
       document.getElementById('kPenerima').innerText = k.Penerima;
       document.getElementById('kNominal').innerText = rp(k.Nominal);
 
-      const pesanWA = `*KUITANSI PEMBAYARAN IURAN RT*%0A` +
+      const pesanWA = `*KUITANSI PEMBAYARAN RESMI RT*%0A` +
         `No: ${k.No_Kuitansi}%0A` +
         `Nama: *${k.Nama_Warga}*%0A` +
+        `Jenis: ${k.Status}%0A` +
         `Periode: ${k.Bulan_Tahun}%0A` +
         `Nominal: *${rp(k.Nominal)}*%0A` +
         `Metode: ${k.Metode}%0A` +
-        `Status: *LUNAS*%0A%0ATerima kasih atas partisipasi Anda.`;
+        `Status: *LUNAS*%0A%0ATerima kasih.`;
       
       let waNum = String(k.No_WA || '').replace(/[^0-9]/g, '');
       if (waNum.startsWith('0')) waNum = '62' + waNum.slice(1);
@@ -732,11 +914,46 @@
       document.getElementById('modalKuitansi').style.display = 'flex';
     }
 
+    function downloadKuitansiGambar() {
+      const area = document.getElementById('printArea');
+      const noKwt = document.getElementById('kNo').innerText;
+      html2canvas(area, { scale: 2, useCORS: true }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Kuitansi_${noKwt}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
     function closeKuitansi() {
       document.getElementById('modalKuitansi').style.display = 'none';
     }
 
-    // HANDLER SIMPAN FORM
+    // HANDLER UBAH PASSWORD MANDIRI
+    async function saveNewPassword(e) {
+      e.preventDefault();
+      const oldP = document.getElementById('pwdOld').value;
+      const newP = document.getElementById('pwdNew').value;
+      const confP = document.getElementById('pwdConfirm').value;
+
+      if (newP !== confP) {
+        alert('Konfirmasi password baru tidak cocok!');
+        return;
+      }
+
+      const res = await callBackend('changePassword', {
+        Username: currentUser.Username,
+        OldPassword: oldP,
+        NewPassword: newP
+      });
+
+      alert(res.message);
+      if (res.status === 'success') {
+        e.target.reset();
+      }
+    }
+
+    // HANDLER SIMPAN FORM LAINNYA
     async function saveProfil(e) {
       e.preventDefault();
       await callBackend('updateProfil', {
@@ -845,12 +1062,13 @@
     async function saveIuranBendahara(e) {
       e.preventDefault();
       const res = await callBackend('addIuran', {
-        Nama_Warga: document.getElementById('bWargaSelect').value,
+        Jenis_Pemasukan: document.getElementById('bJenisMasuk').value,
+        Keterangan: document.getElementById('bKetMasuk').value || '-',
+        Nama_Warga: document.getElementById('bNamaPembayar').value,
         No_WA: document.getElementById('bNoWA').value,
         Bulan_Tahun: document.getElementById('bBulan').value,
         Nominal: document.getElementById('bNominal').value,
         Metode: document.getElementById('bMetode').value,
-        Status: 'Lunas',
         Penerima: `${currentUser.Nama} (Bendahara)`
       });
       e.target.reset();
@@ -858,15 +1076,30 @@
       if (res.kuitansi) bukaKuitansi(res.kuitansi);
     }
 
+    async function savePengeluaranManual(e) {
+      e.preventDefault();
+      await callBackend('addPengeluaran', {
+        Tanggal: document.getElementById('outTgl').value,
+        Kategori: document.getElementById('outKategori').value,
+        Keterangan: document.getElementById('outKet').value,
+        Nominal: document.getElementById('outNominal').value,
+        Dicatat_Oleh: `${currentUser.Nama} (${currentUser.Role})`
+      });
+      e.target.reset();
+      alert('Pengeluaran kas berhasil dicatat dan langsung mengurangi Saldo Kas RT!');
+      fetchAllData();
+    }
+
     async function saveIuranWarga(e) {
       e.preventDefault();
       const res = await callBackend('addIuran', {
+        Jenis_Pemasukan: 'Iuran Wajib Warga',
+        Keterangan: 'Transfer Mandiri',
         Nama_Warga: currentUser.Nama,
         No_WA: currentUser.No_WA,
         Bulan_Tahun: document.getElementById('wBulan').value,
         Nominal: document.getElementById('wNominal').value,
         Metode: 'Transfer Bank',
-        Status: 'Lunas (Transfer)',
         Penerima: 'Sistem Otomatis'
       });
       e.target.reset();
