@@ -25,6 +25,25 @@
     </div>
   </div>
 
+  <!-- MODAL UNIVERSAL EDIT DATA (DINAMIS UNTUK ADMIN, KETUA RT, SEKRETARIS, BENDAHARA) -->
+  <div id="modalEdit" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
+      <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
+        <h3 id="editModalTitle" class="font-bold text-lg"><i class="fas fa-edit text-amber-400 mr-2"></i>Edit Data</h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white text-xl">&times;</button>
+      </div>
+      <form id="editModalForm" onsubmit="submitEditForm(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+        <div id="editModalFields" class="space-y-3"></div>
+        <div class="pt-4 border-t flex justify-end gap-2">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-semibold">Batal</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-bold shadow-sm">
+            <i class="fas fa-save mr-1"></i> Simpan Perubahan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL KUITANSI / STRUK DIGITAL -->
   <div id="modalKuitansi" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-40 p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
@@ -170,7 +189,7 @@
             </div>
             <table class="w-full text-left text-xs">
               <thead class="bg-slate-50 border-b uppercase text-slate-500">
-                <tr><th class="p-3">Tanggal</th><th class="p-3">Nama</th><th class="p-3">Jenis</th><th class="p-3">Nominal</th></tr>
+                <tr><th class="p-3">Tanggal</th><th class="p-3">Nama</th><th class="p-3">Jenis</th><th class="p-3">Nominal</th><th class="p-3">Aksi</th></tr>
               </thead>
               <tbody id="tblAkMasuk" class="divide-y"></tbody>
             </table>
@@ -182,7 +201,7 @@
             </div>
             <table class="w-full text-left text-xs">
               <thead class="bg-slate-50 border-b uppercase text-slate-500">
-                <tr><th class="p-3">Tanggal</th><th class="p-3">Kategori</th><th class="p-3">Keterangan</th><th class="p-3">Nominal</th></tr>
+                <tr><th class="p-3">Tanggal</th><th class="p-3">Kategori</th><th class="p-3">Keterangan</th><th class="p-3">Nominal</th><th class="p-3">Aksi</th></tr>
               </thead>
               <tbody id="tblAkKeluar" class="divide-y"></tbody>
             </table>
@@ -243,7 +262,7 @@
         </div>
       </section>
 
-      <!-- 2. VIEW: KELOLA AKUN (ADMIN & SEKRETARIS) -->
+      <!-- 2. VIEW: KELOLA AKUN (ADMIN & SEKRETARIS - DENGAN EDIT & HAPUS) -->
       <section id="view-akun" class="view-panel hidden space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-xs border">
           <h3 class="font-bold text-lg mb-4"><i class="fas fa-user-shield text-emerald-600 mr-2"></i>Daftarkan Akun Baru</h3>
@@ -260,14 +279,14 @@
         <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500">
-              <tr><th class="p-3">Nama</th><th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">No. WA</th><th class="p-3">Alamat/Blok</th></tr>
+              <tr><th class="p-3">Nama</th><th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">No. WA</th><th class="p-3">Alamat/Blok</th><th class="p-3 text-center">Aksi</th></tr>
             </thead>
             <tbody id="tblUsers" class="divide-y"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- 3. VIEW: DATA PENDUDUK (ADMIN & SEKRETARIS) -->
+      <!-- 3. VIEW: DATA PENDUDUK (ADMIN & SEKRETARIS - DENGAN EDIT & HAPUS) -->
       <section id="view-penduduk" class="view-panel hidden space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-xs border">
           <h3 class="font-bold text-lg mb-4"><i class="fas fa-users text-emerald-600 mr-2"></i>Input Data Kependudukan</h3>
@@ -285,14 +304,14 @@
         <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500">
-              <tr><th class="p-3">NIK</th><th class="p-3">No. KK</th><th class="p-3">Nama Lengkap</th><th class="p-3">L/P</th><th class="p-3">Status</th><th class="p-3">Alamat</th></tr>
+              <tr><th class="p-3">NIK</th><th class="p-3">No. KK</th><th class="p-3">Nama Lengkap</th><th class="p-3">L/P</th><th class="p-3">Status</th><th class="p-3">Alamat</th><th class="p-3 text-center">Aksi</th></tr>
             </thead>
             <tbody id="tblPenduduk" class="divide-y"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- 4. VIEW: JADWAL & ABSENSI RONDA (KETUA RT & SEKRETARIS) -->
+      <!-- 4. VIEW: JADWAL & ABSENSI RONDA (KETUA RT & SEKRETARIS - DENGAN EDIT & HAPUS) -->
       <section id="view-ronda" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
@@ -329,27 +348,27 @@
           <div class="p-4 border-b font-bold">Daftar Jadwal Ronda Aktif</div>
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500">
-              <tr><th class="p-3">Hari / Tanggal</th><th class="p-3">Petugas 1</th><th class="p-3">Petugas 2</th><th class="p-3">Petugas 3</th><th class="p-3">Keterangan</th></tr>
+              <tr><th class="p-3">Hari / Tanggal</th><th class="p-3">Petugas 1</th><th class="p-3">Petugas 2</th><th class="p-3">Petugas 3</th><th class="p-3">Keterangan</th><th class="p-3 text-center">Aksi</th></tr>
             </thead>
             <tbody id="tblJadwalRonda" class="divide-y"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- 5. VIEW: REKAP KEHADIRAN RONDA (ADMIN & KETUA RT) -->
+      <!-- 5. VIEW: REKAP KEHADIRAN RONDA (ADMIN & KETUA RT - DENGAN EDIT & HAPUS) -->
       <section id="view-rekap-ronda" class="view-panel hidden space-y-6">
         <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
           <div class="p-4 border-b font-bold">Rekapitulasi Kehadiran Ronda Warga</div>
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500">
-              <tr><th class="p-3">Tanggal</th><th class="p-3">Nama Petugas</th><th class="p-3">Status Kehadiran</th><th class="p-3">Dicatat Oleh</th></tr>
+              <tr><th class="p-3">Tanggal</th><th class="p-3">Nama Petugas</th><th class="p-3">Status Kehadiran</th><th class="p-3">Dicatat Oleh</th><th class="p-3 text-center">Aksi</th></tr>
             </thead>
             <tbody id="tblAbsenRonda" class="divide-y"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- 6. VIEW: JADWAL & ABSENSI RAPAT (KETUA RT & SEKRETARIS) -->
+      <!-- 6. VIEW: JADWAL & ABSENSI RAPAT (KETUA RT & SEKRETARIS - DENGAN EDIT & HAPUS) -->
       <section id="view-rapat" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
@@ -384,14 +403,14 @@
           <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
             <div class="p-4 border-b font-bold">Jadwal Kegiatan Rapat</div>
             <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500"><tr><th class="p-3">Tanggal & Jam</th><th class="p-3">Agenda</th><th class="p-3">Tempat</th></tr></thead>
+              <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500"><tr><th class="p-3">Tanggal & Jam</th><th class="p-3">Agenda</th><th class="p-3">Tempat</th><th class="p-3 text-center">Aksi</th></tr></thead>
               <tbody id="tblJadwalRapat" class="divide-y"></tbody>
             </table>
           </div>
           <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
             <div class="p-4 border-b font-bold">Log Kehadiran Warga di Rapat</div>
             <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500"><tr><th class="p-3">Agenda</th><th class="p-3">Nama Warga</th><th class="p-3">Status</th></tr></thead>
+              <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500"><tr><th class="p-3">Agenda</th><th class="p-3">Nama Warga</th><th class="p-3">Status</th><th class="p-3 text-center">Aksi</th></tr></thead>
               <tbody id="tblAbsenRapat" class="divide-y"></tbody>
             </table>
           </div>
@@ -483,7 +502,7 @@
         </div>
       </section>
 
-      <!-- 8. VIEW: REKAP IURAN BULANAN & TAHUNAN -->
+      <!-- 8. VIEW: REKAP IURAN BULANAN & TAHUNAN (DENGAN EDIT & HAPUS UNTUK BENDAHARA) -->
       <section id="view-rekap-iuran" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="bg-white p-5 rounded-2xl border shadow-xs">
@@ -503,7 +522,7 @@
         <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500">
-              <tr><th class="p-3">No. Kuitansi</th><th class="p-3">Tanggal</th><th class="p-3">Periode</th><th class="p-3">Nama</th><th class="p-3">Jenis / Ket</th><th class="p-3">Nominal</th><th class="p-3">Kuitansi</th></tr>
+              <tr><th class="p-3">No. Kuitansi</th><th class="p-3">Tanggal</th><th class="p-3">Periode</th><th class="p-3">Nama</th><th class="p-3">Jenis / Ket</th><th class="p-3">Nominal</th><th class="p-3 text-center">Kuitansi & Aksi</th></tr>
             </thead>
             <tbody id="tblIuran" class="divide-y"></tbody>
           </table>
@@ -571,8 +590,8 @@
 
     let currentUser = null;
     let db = {};
+    let currentEditAction = '';
 
-    // HYBRID API BRIDGE: POST otomatis untuk data foto Base64, GET untuk transaksi cepat
     function callBackend(action, payload = {}, usePost = false) {
       document.getElementById('loader').style.display = 'flex';
       return new Promise((resolve, reject) => {
@@ -611,6 +630,7 @@
     }
 
     const rp = (n) => 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
+    const esc = (obj) => JSON.stringify(obj).replace(/'/g, "&#39;");
 
     // KOMPRESI OTOMATIS FOTO LOGO KE BASE64 RINGAN (150x150px)
     function handleLogoUpload(event) {
@@ -652,7 +672,184 @@
       reader.readAsDataURL(file);
     }
 
+    // =========================================================================
+    // UNIVERSAL MODAL EDIT SYSTEM (UNTUK SEMUA ROLE PENGURUS)
+    // =========================================================================
+    function openEditModal(type, item) {
+      const titleEl = document.getElementById('editModalTitle');
+      const fieldsEl = document.getElementById('editModalFields');
+      currentEditAction = type;
+      let html = '';
+
+      if (type === 'editUser') {
+        titleEl.innerHTML = `<i class="fas fa-user-edit text-amber-400 mr-2"></i>Edit Akun Pengguna`;
+        const roleOpts = currentUser.Role === 'Admin'
+          ? ['Admin', 'Ketua RT', 'Sekretaris', 'Bendahara', 'Warga']
+          : ['Warga'];
+        html = `
+          <input type="hidden" name="ID" value="${item.ID}">
+          <div><label class="text-xs font-bold text-slate-600">Nama Lengkap</label><input type="text" name="Nama" value="${item.Nama}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Username Login</label><input type="text" name="Username" value="${item.Username}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Reset Password Baru (Kosongkan jika tidak diubah)</label><input type="text" name="Password" placeholder="Isi password baru..." class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Role / Jabatan</label>
+            <select name="Role" class="w-full mt-1 px-3 py-2 border rounded-lg">
+              ${roleOpts.map(r => `<option value="${r}" ${item.Role === r ? 'selected' : ''}>${r}</option>`).join('')}
+            </select>
+          </div>
+          <div><label class="text-xs font-bold text-slate-600">No. WhatsApp</label><input type="text" name="No_WA" value="${item.No_WA}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Blok / Alamat Rumah</label><input type="text" name="Blok_Rumah" value="${item.Blok_Rumah}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+        `;
+      } else if (type === 'editPenduduk') {
+        titleEl.innerHTML = `<i class="fas fa-address-card text-amber-400 mr-2"></i>Edit Data Penduduk`;
+        const cleanNIK = String(item.NIK).replace(/^'/, '');
+        const cleanKK = String(item.No_KK).replace(/^'/, '');
+        html = `
+          <input type="hidden" name="Old_NIK" value="${cleanNIK}">
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-bold text-slate-600">NIK (16 Digit)</label><input type="text" name="NIK" value="${cleanNIK}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+            <div><label class="text-xs font-bold text-slate-600">Nomor KK</label><input type="text" name="No_KK" value="${cleanKK}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          </div>
+          <div><label class="text-xs font-bold text-slate-600">Nama Lengkap</label><input type="text" name="Nama_Lengkap" value="${item.Nama_Lengkap}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-bold text-slate-600">Jenis Kelamin</label>
+              <select name="JK" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                <option value="Laki-laki" ${item.JK === 'Laki-laki' ? 'selected' : ''}>Laki-laki</option>
+                <option value="Perempuan" ${item.JK === 'Perempuan' ? 'selected' : ''}>Perempuan</option>
+              </select>
+            </div>
+            <div><label class="text-xs font-bold text-slate-600">Status Keluarga</label>
+              <select name="Status_Keluarga" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                ${['Kepala Keluarga', 'Istri', 'Anak', 'Famili Lain'].map(s => `<option value="${s}" ${item.Status_Keluarga === s ? 'selected' : ''}>${s}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div><label class="text-xs font-bold text-slate-600">Tempat, Tgl Lahir</label><input type="text" name="Tempat_Tgl_Lahir" value="${item.Tempat_Tgl_Lahir}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Alamat / Blok Rumah</label><input type="text" name="Alamat" value="${item.Alamat}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+        `;
+      } else if (type === 'editJadwalRonda') {
+        titleEl.innerHTML = `<i class="fas fa-shield-alt text-amber-400 mr-2"></i>Edit Jadwal Ronda`;
+        html = `
+          <input type="hidden" name="ID" value="${item.ID}">
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-bold text-slate-600">Hari</label>
+              <select name="Hari" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                ${['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'].map(h => `<option value="${h}" ${item.Hari === h ? 'selected' : ''}>${h}</option>`).join('')}
+              </select>
+            </div>
+            <div><label class="text-xs font-bold text-slate-600">Tanggal</label><input type="date" name="Tanggal" value="${item.Tanggal}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          </div>
+          <div><label class="text-xs font-bold text-slate-600">Petugas 1</label><input type="text" name="Petugas_1" value="${item.Petugas_1}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Petugas 2</label><input type="text" name="Petugas_2" value="${item.Petugas_2}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Petugas 3</label><input type="text" name="Petugas_3" value="${item.Petugas_3 || ''}" class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Keterangan</label><input type="text" name="Keterangan" value="${item.Keterangan || ''}" class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+        `;
+      } else if (type === 'editAbsenRonda') {
+        titleEl.innerHTML = `<i class="fas fa-user-check text-amber-400 mr-2"></i>Edit Absensi Ronda`;
+        html = `
+          <input type="hidden" name="ID" value="${item.ID}">
+          <div><label class="text-xs font-bold text-slate-600">Tanggal</label><input type="date" name="Tanggal" value="${item.Tanggal}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Nama Petugas</label><input type="text" name="Nama_Petugas" value="${item.Nama_Petugas}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Status Kehadiran</label>
+            <select name="Status" class="w-full mt-1 px-3 py-2 border rounded-lg">
+              ${['Hadir', 'Izin', 'Alpa / Tidak Hadir'].map(s => `<option value="${s}" ${item.Status === s ? 'selected' : ''}>${s}</option>`).join('')}
+            </select>
+          </div>
+        `;
+      } else if (type === 'editJadwalRapat') {
+        titleEl.innerHTML = `<i class="fas fa-bullhorn text-amber-400 mr-2"></i>Edit Jadwal Rapat`;
+        html = `
+          <input type="hidden" name="ID" value="${item.ID}">
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-bold text-slate-600">Tanggal</label><input type="date" name="Tanggal" value="${item.Tanggal}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+            <div><label class="text-xs font-bold text-slate-600">Waktu</label><input type="text" name="Waktu" value="${item.Waktu}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          </div>
+          <div><label class="text-xs font-bold text-slate-600">Agenda Rapat</label><input type="text" name="Agenda" value="${item.Agenda}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Tempat / Lokasi</label><input type="text" name="Tempat" value="${item.Tempat}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+        `;
+      } else if (type === 'editAbsenRapat') {
+        titleEl.innerHTML = `<i class="fas fa-clipboard-check text-amber-400 mr-2"></i>Edit Kehadiran Rapat`;
+        html = `
+          <input type="hidden" name="ID" value="${item.ID}">
+          <div><label class="text-xs font-bold text-slate-600">Agenda Rapat</label><input type="text" value="${item.Agenda}" disabled class="w-full mt-1 px-3 py-2 border rounded-lg bg-slate-100 text-slate-500"></div>
+          <div><label class="text-xs font-bold text-slate-600">Nama Warga</label><input type="text" name="Nama_Warga" value="${item.Nama_Warga}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Status Kehadiran</label>
+            <select name="Status" class="w-full mt-1 px-3 py-2 border rounded-lg">
+              ${['Hadir', 'Izin', 'Tidak Hadir'].map(s => `<option value="${s}" ${item.Status === s ? 'selected' : ''}>${s}</option>`).join('')}
+            </select>
+          </div>
+        `;
+      } else if (type === 'editIuran') {
+        titleEl.innerHTML = `<i class="fas fa-file-invoice-dollar text-amber-400 mr-2"></i>Edit Pemasukan / Kuitansi`;
+        html = `
+          <input type="hidden" name="No_Kuitansi" value="${item.No_Kuitansi}">
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-bold text-slate-600">Tanggal Bayar</label><input type="date" name="Tanggal" value="${item.Tanggal}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+            <div><label class="text-xs font-bold text-slate-600">Periode Bulan</label><input type="month" name="Bulan_Tahun" value="${item.Bulan_Tahun}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          </div>
+          <div><label class="text-xs font-bold text-slate-600">Nama Pembayar / Warga</label><input type="text" name="Nama_Warga" value="${item.Nama_Warga}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-bold text-slate-600">No. WhatsApp</label><input type="text" name="No_WA" value="${item.No_WA}" class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+            <div><label class="text-xs font-bold text-slate-600">Nominal (Rp)</label><input type="number" name="Nominal" value="${item.Nominal}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-bold text-slate-600">Metode Bayar</label>
+              <select name="Metode" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                <option value="Tunai" ${item.Metode === 'Tunai' ? 'selected' : ''}>Tunai</option>
+                <option value="Transfer Bank" ${item.Metode === 'Transfer Bank' ? 'selected' : ''}>Transfer Bank</option>
+              </select>
+            </div>
+            <div><label class="text-xs font-bold text-slate-600">Jenis / Keterangan</label><input type="text" name="Status" value="${item.Status}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          </div>
+        `;
+      } else if (type === 'editPengeluaran') {
+        titleEl.innerHTML = `<i class="fas fa-shopping-cart text-amber-400 mr-2"></i>Edit Pengeluaran Kas`;
+        html = `
+          <input type="hidden" name="ID" value="${item.ID}">
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-bold text-slate-600">Tanggal</label><input type="date" name="Tanggal" value="${item.Tanggal}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+            <div><label class="text-xs font-bold text-slate-600">Kategori</label>
+              <select name="Kategori" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                ${['Operasional & ATK RT', 'Kebersihan & Sampah', 'Keamanan & Pos Ronda', 'Perbaikan Fasilitas', 'Kegiatan Sosial / Rapat', 'Lain-lain'].map(k => `<option value="${k}" ${item.Kategori === k ? 'selected' : ''}>${k}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div><label class="text-xs font-bold text-slate-600">Keterangan Pengeluaran</label><input type="text" name="Keterangan" value="${item.Keterangan}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div><label class="text-xs font-bold text-slate-600">Nominal (Rp)</label><input type="number" name="Nominal" value="${item.Nominal}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+        `;
+      }
+
+      fieldsEl.innerHTML = html;
+      document.getElementById('modalEdit').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('modalEdit').style.display = 'none';
+    }
+
+    async function submitEditForm(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = {};
+      formData.forEach((value, key) => { payload[key] = value; });
+
+      const res = await callBackend(currentEditAction, payload);
+      alert(res.message);
+      if (res.status === 'success') {
+        closeEditModal();
+        fetchAllData();
+      }
+    }
+
+    async function confirmDelete(action, payload, label) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus data "${label}" ini?`)) return;
+      const res = await callBackend(action, payload);
+      alert(res.message);
+      if (res.status === 'success') fetchAllData();
+    }
+
+    // =========================================================================
     // LOGIN & LOGOUT
+    // =========================================================================
     async function handleLogin(e) {
       e.preventDefault();
       const res = await callBackend('login', {
@@ -676,7 +873,9 @@
       document.getElementById('loginPage').classList.remove('hidden');
     }
 
+    // =========================================================================
     // SETUP MENU SIDEBAR KIRI BERDASARKAN ROLE
+    // =========================================================================
     function setupSidebarByRole() {
       const role = currentUser.Role;
       document.getElementById('sideUserName').innerText = currentUser.Nama;
@@ -689,15 +888,15 @@
 
       if (role === 'Admin') {
         menus.push(
-          { id: 'akun', icon: 'fa-user-plus', label: 'Daftarkan Akun' },
-          { id: 'penduduk', icon: 'fa-users', label: 'Data Penduduk' },
+          { id: 'akun', icon: 'fa-user-cog', label: 'Kelola & Edit Akun' },
+          { id: 'penduduk', icon: 'fa-users', label: 'Kelola Data Penduduk' },
           { id: 'rekap-ronda', icon: 'fa-shield-alt', label: 'Rekap Kehadiran Ronda' },
           { id: 'rekap-iuran', icon: 'fa-file-invoice-dollar', label: 'Rekap Pemasukan Kas' },
           { id: 'profil', icon: 'fa-image', label: 'Logo & Profil Desa' }
         );
       } else if (role === 'Ketua RT') {
         menus.push(
-          { id: 'rapat', icon: 'fa-clipboard-check', label: 'Absen Rapat & Warga' },
+          { id: 'rapat', icon: 'fa-clipboard-check', label: 'Jadwal & Absen Rapat' },
           { id: 'ronda', icon: 'fa-calendar-alt', label: 'Jadwal & Absen Ronda' },
           { id: 'rekap-ronda', icon: 'fa-list-check', label: 'Rekap Kehadiran Ronda' },
           { id: 'rekap-iuran', icon: 'fa-wallet', label: 'Rekap Iuran Warga' },
@@ -705,15 +904,15 @@
         );
       } else if (role === 'Sekretaris') {
         menus.push(
-          { id: 'akun', icon: 'fa-user-plus', label: 'Tambah Akun Warga' },
-          { id: 'penduduk', icon: 'fa-address-book', label: 'Tambah Data Penduduk' },
+          { id: 'akun', icon: 'fa-user-edit', label: 'Kelola Akun Warga' },
+          { id: 'penduduk', icon: 'fa-address-book', label: 'Kelola Data Penduduk' },
           { id: 'ronda', icon: 'fa-shield-alt', label: 'Jadwal & Absen Ronda' },
           { id: 'rapat', icon: 'fa-calendar-plus', label: 'Jadwal Kegiatan Rapat' }
         );
       } else if (role === 'Bendahara') {
         menus.push(
-          { id: 'bendahara-iuran', icon: 'fa-cash-register', label: 'Kas Masuk, Keluar & Kuitansi' },
-          { id: 'rekap-iuran', icon: 'fa-chart-line', label: 'Rekap Bulanan & Tahunan' }
+          { id: 'bendahara-iuran', icon: 'fa-cash-register', label: 'Input Kas & Rekening' },
+          { id: 'rekap-iuran', icon: 'fa-edit', label: 'Kelola & Edit Kas Masuk' }
         );
       } else if (role === 'Warga') {
         menus.push(
@@ -755,7 +954,9 @@
       });
     }
 
-    // MUAT & RENDER SEMUA DATA
+    // =========================================================================
+    // MUAT & RENDER SEMUA DATA DENGAN TOMBOL EDIT & HAPUS SESUAI HAK AKSES
+    // =========================================================================
     async function fetchAllData() {
       const res = await callBackend('getAllData');
       if (res.status !== 'success') {
@@ -763,6 +964,7 @@
         return;
       }
       db = res;
+      const role = currentUser.Role;
 
       const p = db.profil || {};
       const currentLogo = p.Logo_URL || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png';
@@ -786,33 +988,105 @@
       document.getElementById('wInfoRek').innerText = p.No_Rekening || '-';
       document.getElementById('wInfoAN').innerText = 'a.n. ' + (p.Atas_Nama || '-');
 
-      document.getElementById('tblUsers').innerHTML = db.users.map(u => `
-        <tr><td class="p-3 font-bold">${u.Nama}</td><td class="p-3">${u.Username}</td><td class="p-3"><span class="px-2 py-1 bg-slate-100 rounded text-xs font-bold">${u.Role}</span></td><td class="p-3">${u.No_WA}</td><td class="p-3">${u.Blok_Rumah}</td></tr>
-      `).join('');
+      // 1. TABEL USERS (Admin bisa edit semua; Sekretaris hanya bisa edit Warga)
+      document.getElementById('tblUsers').innerHTML = db.users.map(u => {
+        const canEdit = role === 'Admin' || (role === 'Sekretaris' && u.Role === 'Warga');
+        const isSelf = u.Username === currentUser.Username;
+        return `
+          <tr>
+            <td class="p-3 font-bold">${u.Nama}</td>
+            <td class="p-3">${u.Username}</td>
+            <td class="p-3"><span class="px-2 py-1 bg-slate-100 rounded text-xs font-bold">${u.Role}</span></td>
+            <td class="p-3">${u.No_WA}</td>
+            <td class="p-3">${u.Blok_Rumah}</td>
+            <td class="p-3 text-center space-x-1">
+              ${canEdit ? `<button onclick='openEditModal("editUser", ${esc(u)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>` : '<span class="text-xs text-slate-400">-</span>'}
+              ${canEdit && !isSelf ? `<button onclick='confirmDelete("deleteUser", {ID: "${u.ID}"}, "${u.Nama}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('');
 
       const wargaList = db.users.filter(u => u.Role === 'Warga');
       document.getElementById('bWargaSelect').innerHTML = `<option value="">-- Pilih Warga / Input Manual --</option>` + wargaList.map(w => `<option value="${w.Nama}" data-wa="${w.No_WA}">${w.Nama} (${w.Blok_Rumah})</option>`).join('');
 
-      document.getElementById('tblPenduduk').innerHTML = db.penduduk.map(d => `
-        <tr><td class="p-3 font-mono text-xs">${d.NIK}</td><td class="p-3 font-mono text-xs">${d.No_KK}</td><td class="p-3 font-bold">${d.Nama_Lengkap}</td><td class="p-3">${d.JK}</td><td class="p-3">${d.Status_Keluarga}</td><td class="p-3">${d.Alamat}</td></tr>
-      `).join('');
+      // 2. TABEL PENDUDUK (Admin & Sekretaris bisa Edit & Hapus)
+      document.getElementById('tblPenduduk').innerHTML = db.penduduk.map(d => {
+        const cleanNIK = String(d.NIK).replace(/^'/, '');
+        const cleanKK = String(d.No_KK).replace(/^'/, '');
+        return `
+          <tr>
+            <td class="p-3 font-mono text-xs">${cleanNIK}</td>
+            <td class="p-3 font-mono text-xs">${cleanKK}</td>
+            <td class="p-3 font-bold">${d.Nama_Lengkap}</td>
+            <td class="p-3">${d.JK}</td>
+            <td class="p-3">${d.Status_Keluarga}</td>
+            <td class="p-3">${d.Alamat}</td>
+            <td class="p-3 text-center space-x-1">
+              <button onclick='openEditModal("editPenduduk", ${esc(d)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
+              <button onclick='confirmDelete("deletePenduduk", {NIK: "${cleanNIK}"}, "${d.Nama_Lengkap}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
 
+      // 3. TABEL JADWAL RONDA (Ketua RT & Sekretaris bisa Edit & Hapus)
       document.getElementById('tblJadwalRonda').innerHTML = db.jadwalRonda.map(r => `
-        <tr><td class="p-3 font-bold">${r.Hari}, ${r.Tanggal}</td><td class="p-3">${r.Petugas_1}</td><td class="p-3">${r.Petugas_2}</td><td class="p-3">${r.Petugas_3 || '-'}</td><td class="p-3 text-slate-500">${r.Keterangan}</td></tr>
+        <tr>
+          <td class="p-3 font-bold">${r.Hari}, ${r.Tanggal}</td>
+          <td class="p-3">${r.Petugas_1}</td>
+          <td class="p-3">${r.Petugas_2}</td>
+          <td class="p-3">${r.Petugas_3 || '-'}</td>
+          <td class="p-3 text-slate-500">${r.Keterangan}</td>
+          <td class="p-3 text-center space-x-1">
+            <button onclick='openEditModal("editJadwalRonda", ${esc(r)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
+            <button onclick='confirmDelete("deleteJadwalRonda", {ID: "${r.ID}"}, "Ronda ${r.Tanggal}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
       `).join('');
 
+      // 4. TABEL ABSEN RONDA (Admin, Ketua RT, Sekretaris bisa Edit & Hapus)
       document.getElementById('tblAbsenRonda').innerHTML = db.absenRonda.map(a => `
-        <tr><td class="p-3">${a.Tanggal}</td><td class="p-3 font-bold">${a.Nama_Petugas}</td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${a.Status === 'Hadir' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${a.Status}</span></td><td class="p-3 text-slate-500">${a.Dicatat_Oleh}</td></tr>
+        <tr>
+          <td class="p-3">${a.Tanggal}</td>
+          <td class="p-3 font-bold">${a.Nama_Petugas}</td>
+          <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${a.Status === 'Hadir' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${a.Status}</span></td>
+          <td class="p-3 text-slate-500">${a.Dicatat_Oleh}</td>
+          <td class="p-3 text-center space-x-1">
+            <button onclick='openEditModal("editAbsenRonda", ${esc(a)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
+            <button onclick='confirmDelete("deleteAbsenRonda", {ID: "${a.ID}"}, "Absen ${a.Nama_Petugas}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
       `).join('');
 
+      // 5. TABEL JADWAL RAPAT (Ketua RT & Sekretaris bisa Edit & Hapus)
       document.getElementById('tblJadwalRapat').innerHTML = db.jadwalRapat.map(rp => `
-        <tr><td class="p-3 font-bold">${rp.Tanggal} (${rp.Waktu})</td><td class="p-3">${rp.Agenda}</td><td class="p-3">${rp.Tempat}</td></tr>
+        <tr>
+          <td class="p-3 font-bold">${rp.Tanggal} (${rp.Waktu})</td>
+          <td class="p-3">${rp.Agenda}</td>
+          <td class="p-3">${rp.Tempat}</td>
+          <td class="p-3 text-center space-x-1">
+            <button onclick='openEditModal("editJadwalRapat", ${esc(rp)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
+            <button onclick='confirmDelete("deleteJadwalRapat", {ID: "${rp.ID}"}, "${rp.Agenda}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
       `).join('');
 
       document.getElementById('arpSelectRapat').innerHTML = db.jadwalRapat.map(rp => `<option value="${rp.ID}|${rp.Agenda}">${rp.Tanggal} - ${rp.Agenda}</option>`).join('');
 
+      // 6. TABEL ABSEN RAPAT (Ketua RT bisa Edit & Hapus)
       document.getElementById('tblAbsenRapat').innerHTML = db.absenRapat.map(ar => `
-        <tr><td class="p-3 font-medium">${ar.Agenda}</td><td class="p-3 font-bold">${ar.Nama_Warga}</td><td class="p-3"><span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-bold">${ar.Status}</span></td></tr>
+        <tr>
+          <td class="p-3 font-medium">${ar.Agenda}</td>
+          <td class="p-3 font-bold">${ar.Nama_Warga}</td>
+          <td class="p-3"><span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-bold">${ar.Status}</span></td>
+          <td class="p-3 text-center space-x-1">
+            ${role === 'Ketua RT' ? `
+              <button onclick='openEditModal("editAbsenRapat", ${esc(ar)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
+              <button onclick='confirmDelete("deleteAbsenRapat", {ID: "${ar.ID}"}, "${ar.Nama_Warga}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>
+            ` : '<span class="text-xs text-slate-400">-</span>'}
+          </td>
+        </tr>
       `).join('');
 
       renderArusKas();
@@ -823,6 +1097,7 @@
     function renderArusKas() {
       const pemasukanList = db.iuran || [];
       const pengeluaranList = db.pengeluaran || [];
+      const isBendahara = currentUser.Role === 'Bendahara';
 
       const totalMasuk = pemasukanList.reduce((acc, item) => acc + (Number(item.Nominal) || 0), 0);
       const totalKeluar = pengeluaranList.reduce((acc, item) => acc + (Number(item.Nominal) || 0), 0);
@@ -838,8 +1113,14 @@
           <td class="p-3 font-bold">${m.Nama_Warga}</td>
           <td class="p-3 text-slate-600">${m.Status}</td>
           <td class="p-3 font-bold text-emerald-600">+ ${rp(m.Nominal)}</td>
+          <td class="p-3 space-x-1">
+            ${isBendahara ? `
+              <button onclick='openEditModal("editIuran", ${esc(m)})' class="px-2 py-1 bg-amber-500 text-white rounded text-[11px] font-bold"><i class="fas fa-edit"></i></button>
+              <button onclick='confirmDelete("deleteIuran", {No_Kuitansi: "${m.No_Kuitansi}"}, "${m.No_Kuitansi}")' class="px-2 py-1 bg-rose-600 text-white rounded text-[11px]"><i class="fas fa-trash"></i></button>
+            ` : `<button onclick='bukaKuitansi(${esc(m)})' class="px-2 py-1 bg-slate-200 text-slate-700 rounded text-[11px]"><i class="fas fa-receipt"></i></button>`}
+          </td>
         </tr>
-      `).join('') : `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada pemasukan kas</td></tr>`;
+      `).join('') : `<tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada pemasukan kas</td></tr>`;
 
       document.getElementById('tblAkKeluar').innerHTML = pengeluaranList.length ? pengeluaranList.map(k => `
         <tr>
@@ -847,8 +1128,14 @@
           <td class="p-3 font-semibold">${k.Kategori}</td>
           <td class="p-3 text-slate-600">${k.Keterangan}</td>
           <td class="p-3 font-bold text-rose-600">- ${rp(k.Nominal)}</td>
+          <td class="p-3 space-x-1">
+            ${isBendahara ? `
+              <button onclick='openEditModal("editPengeluaran", ${esc(k)})' class="px-2 py-1 bg-amber-500 text-white rounded text-[11px] font-bold"><i class="fas fa-edit"></i></button>
+              <button onclick='confirmDelete("deletePengeluaran", {ID: "${k.ID}"}, "${k.Keterangan}")' class="px-2 py-1 bg-rose-600 text-white rounded text-[11px]"><i class="fas fa-trash"></i></button>
+            ` : '<span class="text-slate-300">-</span>'}
+          </td>
         </tr>
-      `).join('') : `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada pengeluaran kas</td></tr>`;
+      `).join('') : `<tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada pengeluaran kas</td></tr>`;
     }
 
     function autoFillWA() {
@@ -862,6 +1149,7 @@
     function renderRekapIuran() {
       const filterBln = document.getElementById('filterBulanIuran').value;
       const tahunIni = new Date().getFullYear().toString();
+      const isBendahara = currentUser.Role === 'Bendahara';
       let totalTahun = 0, totalBulan = 0;
 
       db.iuran.forEach(i => {
@@ -882,7 +1170,13 @@
           <td class="p-3">${i.Nama_Warga}</td>
           <td class="p-3 text-xs">${i.Status}</td>
           <td class="p-3 font-bold text-emerald-600">${rp(i.Nominal)}</td>
-          <td class="p-3"><button onclick='bukaKuitansi(${JSON.stringify(i)})' class="px-2.5 py-1 bg-slate-800 text-white rounded text-xs hover:bg-slate-700"><i class="fas fa-image mr-1"></i>Kuitansi</button></td>
+          <td class="p-3 text-center space-x-1">
+            <button onclick='bukaKuitansi(${esc(i)})' class="px-2.5 py-1 bg-slate-800 text-white rounded text-xs hover:bg-slate-700"><i class="fas fa-image mr-1"></i>Kuitansi</button>
+            ${isBendahara ? `
+              <button onclick='openEditModal("editIuran", ${esc(i)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
+              <button onclick='confirmDelete("deleteIuran", {No_Kuitansi: "${i.No_Kuitansi}"}, "${i.No_Kuitansi}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>
+            ` : ''}
+          </td>
         </tr>
       `).join('');
 
@@ -894,7 +1188,7 @@
           <td class="p-3 font-bold">${i.Bulan_Tahun}</td>
           <td class="p-3 font-bold text-emerald-600">${rp(i.Nominal)}</td>
           <td class="p-3"><span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">${i.Status}</span></td>
-          <td class="p-3"><button onclick='bukaKuitansi(${JSON.stringify(i)})' class="px-3 py-1 bg-emerald-600 text-white rounded text-xs font-bold">Struk Gambar</button></td>
+          <td class="p-3"><button onclick='bukaKuitansi(${esc(i)})' class="px-3 py-1 bg-emerald-600 text-white rounded text-xs font-bold">Struk Gambar</button></td>
         </tr>
       `).join('');
     }
@@ -908,16 +1202,28 @@
               <span class="font-bold text-slate-800">${d.Pengirim}</span>
               <span class="text-xs text-slate-400 ml-2">(${d.Blok}) • ${d.Tanggal}</span>
             </div>
-            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${d.Balasan_Ketua ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${d.Status}</span>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold ${d.Balasan_Ketua ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${d.Status}</span>
+              ${isKetua ? `<button onclick='confirmDelete("deleteDiskusi", {ID: "${d.ID}"}, "Diskusi ${d.Pengirim}")' class="px-2 py-1 bg-rose-600 text-white rounded text-xs"><i class="fas fa-trash"></i></button>` : ''}
+            </div>
           </div>
           <p class="text-slate-700 bg-slate-50 p-3 rounded-xl border text-sm">${d.Pesan}</p>
           ${d.Balasan_Ketua ? `
             <div class="pl-4 border-l-4 border-emerald-500 text-sm">
-              <p class="text-xs font-bold text-emerald-700">Tanggapan Ketua RT:</p>
+              <div class="flex items-center justify-between">
+                <p class="text-xs font-bold text-emerald-700">Tanggapan Ketua RT:</p>
+                ${isKetua ? `<button onclick="document.getElementById('editBalasBox-${d.ID}').classList.toggle('hidden')" class="text-xs text-amber-600 font-bold hover:underline"><i class="fas fa-edit"></i> Edit Balasan</button>` : ''}
+              </div>
               <p class="text-slate-700 mt-0.5">${d.Balasan_Ketua}</p>
+              ${isKetua ? `
+                <form id="editBalasBox-${d.ID}" onsubmit="kirimBalasan(event, '${d.ID}', 'editBalas-${d.ID}')" class="hidden flex gap-2 pt-2">
+                  <input type="text" id="editBalas-${d.ID}" value="${d.Balasan_Ketua}" required class="flex-1 px-3 py-1.5 border rounded-lg text-sm">
+                  <button type="submit" class="bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Update</button>
+                </form>
+              ` : ''}
             </div>
           ` : isKetua ? `
-            <form onsubmit="kirimBalasan(event, '${d.ID}')" class="flex gap-2 pt-2">
+            <form onsubmit="kirimBalasan(event, '${d.ID}', 'balas-${d.ID}')" class="flex gap-2 pt-2">
               <input type="text" id="balas-${d.ID}" required placeholder="Tulis tanggapan Ketua RT..." class="flex-1 px-3 py-2 border rounded-lg text-sm">
               <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold">Balas</button>
             </form>
@@ -989,12 +1295,9 @@
       });
 
       alert(res.message);
-      if (res.status === 'success') {
-        e.target.reset();
-      }
+      if (res.status === 'success') e.target.reset();
     }
 
-    // SIMPAN PROFIL & FOTO LOGO (Menggunakan POST agar data gambar Base64 aman)
     async function saveProfil(e) {
       e.preventDefault();
       const res = await callBackend('updateProfil', {
@@ -1164,11 +1467,11 @@
       fetchAllData();
     }
 
-    async function kirimBalasan(e, id) {
+    async function kirimBalasan(e, id, inputId) {
       e.preventDefault();
       await callBackend('balasDiskusi', {
         ID: id,
-        Balasan_Ketua: document.getElementById('balas-' + id).value
+        Balasan_Ketua: document.getElementById(inputId).value
       });
       fetchAllData();
     }
