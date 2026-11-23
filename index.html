@@ -25,7 +25,7 @@
     </div>
   </div>
 
-  <!-- MODAL UNIVERSAL EDIT DATA (DINAMIS UNTUK ADMIN, KETUA RT, SEKRETARIS, BENDAHARA) -->
+  <!-- MODAL UNIVERSAL EDIT DATA -->
   <div id="modalEdit" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4 backdrop-blur-xs">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
       <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
@@ -262,7 +262,7 @@
         </div>
       </section>
 
-      <!-- 2. VIEW: KELOLA AKUN (ADMIN & SEKRETARIS - DENGAN EDIT & HAPUS) -->
+      <!-- 2. VIEW: KELOLA AKUN (ADMIN & SEKRETARIS) -->
       <section id="view-akun" class="view-panel hidden space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-xs border">
           <h3 class="font-bold text-lg mb-4"><i class="fas fa-user-shield text-emerald-600 mr-2"></i>Daftarkan Akun Baru</h3>
@@ -286,7 +286,7 @@
         </div>
       </section>
 
-      <!-- 3. VIEW: DATA PENDUDUK (ADMIN & SEKRETARIS - DENGAN EDIT & HAPUS) -->
+      <!-- 3. VIEW: DATA PENDUDUK (ADMIN & SEKRETARIS) -->
       <section id="view-penduduk" class="view-panel hidden space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-xs border">
           <h3 class="font-bold text-lg mb-4"><i class="fas fa-users text-emerald-600 mr-2"></i>Input Data Kependudukan</h3>
@@ -311,51 +311,99 @@
         </div>
       </section>
 
-      <!-- 4. VIEW: JADWAL & ABSENSI RONDA (KETUA RT & SEKRETARIS - DENGAN EDIT & HAPUS) -->
+      <!-- 4. VIEW: JADWAL & ABSENSI RONDA PINTAR (PETUGAS TANPA BATAS & ABSENSI OTOMATIS) -->
       <section id="view-ronda" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- KIRI: BUAT JADWAL RONDA (PILIH PETUGAS DARI AKUN TANPA BATAS) -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
-            <h3 class="font-bold text-lg mb-4"><i class="fas fa-calendar-alt text-emerald-600 mr-2"></i>Buat Jadwal Ronda</h3>
-            <form onsubmit="saveJadwalRonda(event)" class="space-y-3">
+            <h3 class="font-bold text-lg mb-4"><i class="fas fa-calendar-alt text-emerald-600 mr-2"></i>Buat Jadwal Ronda (Petugas Tanpa Batas)</h3>
+            <form onsubmit="saveJadwalRonda(event)" class="space-y-4">
               <div class="grid grid-cols-2 gap-3">
-                <select id="jrHari" class="px-3 py-2 border rounded-lg"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option><option>Minggu</option></select>
-                <input type="date" id="jrTgl" required class="px-3 py-2 border rounded-lg">
+                <div>
+                  <label class="text-xs font-bold text-slate-600">Hari Ronda</label>
+                  <select id="jrHari" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                    <option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option><option>Minggu</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-slate-600">Tanggal Ronda</label>
+                  <input type="date" id="jrTgl" onchange="autoDetectHariRonda()" required class="w-full mt-1 px-3 py-2 border rounded-lg">
+                </div>
               </div>
-              <input type="text" id="jrP1" required placeholder="Nama Petugas 1" class="w-full px-3 py-2 border rounded-lg">
-              <input type="text" id="jrP2" required placeholder="Nama Petugas 2" class="w-full px-3 py-2 border rounded-lg">
-              <input type="text" id="jrP3" placeholder="Nama Petugas 3 (Opsional)" class="w-full px-3 py-2 border rounded-lg">
-              <input type="text" id="jrKet" placeholder="Catatan Pos / Shift" class="w-full px-3 py-2 border rounded-lg">
-              <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold">Simpan Jadwal Ronda</button>
+
+              <!-- PILIH NAMA PETUGAS OTOMATIS DARI AKUN -->
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-bold text-slate-600">Pilih Petugas Ronda (Otomatis dari Akun)</label>
+                  <span id="countPetugasTerpilih" class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[11px] font-bold">0 dipilih</span>
+                </div>
+                <input type="text" id="searchPetugasRonda" onkeyup="filterDaftarAkunRonda()" placeholder="Cari nama warga / blok rumah..." class="w-full px-3 py-1.5 mb-2 border rounded-lg text-xs bg-slate-50">
+                <div id="listCeklisAkunRonda" class="max-h-44 overflow-y-auto border rounded-xl p-2 bg-slate-50/70 space-y-1">
+                  <!-- Daftar akun otomatis terisi di sini -->
+                </div>
+              </div>
+
+              <div>
+                <label class="text-xs font-bold text-slate-600">Catatan Pos / Shift</label>
+                <input type="text" id="jrKet" placeholder="Contoh: Pos Utama (22.00 - 04.00)" class="w-full mt-1 px-3 py-2 border rounded-lg">
+              </div>
+              <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg font-semibold shadow-sm">
+                <i class="fas fa-save mr-1"></i> Simpan Jadwal Ronda
+              </button>
             </form>
           </div>
 
-          <div class="bg-white p-6 rounded-2xl shadow-xs border">
+          <!-- KANAN: ABSENSI KEHADIRAN RONDA OTOMATIS MUNCUL NAMA & STATUS -->
+          <div class="bg-white p-6 rounded-2xl shadow-xs border flex flex-col">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-user-check text-blue-600 mr-2"></i>Absensi Kehadiran Ronda</h3>
-            <form onsubmit="saveAbsenRonda(event)" class="space-y-3">
-              <input type="date" id="arTgl" required class="w-full px-3 py-2 border rounded-lg">
-              <input type="text" id="arNama" required placeholder="Nama Warga / Petugas Ronda" class="w-full px-3 py-2 border rounded-lg">
-              <select id="arStatus" class="w-full px-3 py-2 border rounded-lg">
-                <option value="Hadir">Hadir Bertugas</option>
-                <option value="Izin">Izin</option>
-                <option value="Alpa / Tidak Hadir">Alpa / Tidak Hadir</option>
-              </select>
-              <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold">Catat Kehadiran Ronda</button>
+            <form onsubmit="saveBatchAbsenRonda(event)" class="space-y-4 flex-1 flex flex-col">
+              <div>
+                <label class="text-xs font-bold text-slate-600">Pilih Jadwal Ronda (Nama Petugas Otomatis Muncul)</label>
+                <select id="arSelectJadwal" onchange="renderChecklistPetugasRonda()" class="w-full mt-1 px-3 py-2 border rounded-lg font-medium bg-blue-50/40 border-blue-200"></select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-xs font-bold text-slate-600">Tanggal Absen</label>
+                  <input type="date" id="arTgl" required class="w-full mt-1 px-3 py-2 border rounded-lg">
+                </div>
+                <div class="flex items-end">
+                  <button type="button" onclick="setAllStatusRonda('Hadir')" class="w-full py-2 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold">
+                    <i class="fas fa-check-double mr-1"></i> Tandai Semua Hadir
+                  </button>
+                </div>
+              </div>
+
+              <!-- DAFTAR NAMA PETUGAS OTOMATIS MUNCUL DENGAN PILIHAN STATUS -->
+              <div class="flex-1">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5">Daftar Petugas Ronda (Klik Status Kehadiran):</label>
+                <div id="arChecklistContainer" class="max-h-60 overflow-y-auto border rounded-xl p-3 bg-slate-50 space-y-2.5">
+                  <p class="text-xs text-slate-400 text-center py-4">Pilih jadwal ronda di atas untuk memunculkan nama petugas.</p>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-semibold shadow-sm">
+                <i class="fas fa-check-circle mr-1"></i> Simpan Absensi Petugas Ronda
+              </button>
             </form>
           </div>
+
         </div>
 
+        <!-- TABEL DAFTAR JADWAL RONDA AKTIF -->
         <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
           <div class="p-4 border-b font-bold">Daftar Jadwal Ronda Aktif</div>
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 border-b text-xs uppercase text-slate-500">
-              <tr><th class="p-3">Hari / Tanggal</th><th class="p-3">Petugas 1</th><th class="p-3">Petugas 2</th><th class="p-3">Petugas 3</th><th class="p-3">Keterangan</th><th class="p-3 text-center">Aksi</th></tr>
+              <tr><th class="p-3">Hari / Tanggal</th><th class="p-3">Daftar Petugas Ronda (Tanpa Batas)</th><th class="p-3">Keterangan</th><th class="p-3 text-center">Aksi</th></tr>
             </thead>
             <tbody id="tblJadwalRonda" class="divide-y"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- 5. VIEW: REKAP KEHADIRAN RONDA (ADMIN & KETUA RT - DENGAN EDIT & HAPUS) -->
+      <!-- 5. VIEW: REKAP KEHADIRAN RONDA (ADMIN & KETUA RT) -->
       <section id="view-rekap-ronda" class="view-panel hidden space-y-6">
         <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
           <div class="p-4 border-b font-bold">Rekapitulasi Kehadiran Ronda Warga</div>
@@ -368,7 +416,7 @@
         </div>
       </section>
 
-      <!-- 6. VIEW: JADWAL & ABSENSI RAPAT (KETUA RT & SEKRETARIS - DENGAN EDIT & HAPUS) -->
+      <!-- 6. VIEW: JADWAL & ABSENSI RAPAT (KETUA RT & SEKRETARIS) -->
       <section id="view-rapat" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
@@ -502,7 +550,7 @@
         </div>
       </section>
 
-      <!-- 8. VIEW: REKAP IURAN BULANAN & TAHUNAN (DENGAN EDIT & HAPUS UNTUK BENDAHARA) -->
+      <!-- 8. VIEW: REKAP IURAN BULANAN & TAHUNAN -->
       <section id="view-rekap-iuran" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="bg-white p-5 rounded-2xl border shadow-xs">
@@ -632,6 +680,14 @@
     const rp = (n) => 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
     const esc = (obj) => JSON.stringify(obj).replace(/'/g, "&#39;");
 
+    // HELPER: MENGGABUNGKAN KOLOM PETUGAS LAMA/BARU MENJADI ARRAY NAMA
+    function extractPetugasArray(r) {
+      const raw = [r.Petugas_1, r.Petugas_2, r.Petugas_3]
+        .filter(v => v && String(v).trim() !== '' && String(v).trim() !== '-')
+        .join(', ');
+      return raw.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
     // KOMPRESI OTOMATIS FOTO LOGO KE BASE64 RINGAN (150x150px)
     function handleLogoUpload(event) {
       const file = event.target.files[0];
@@ -673,7 +729,124 @@
     }
 
     // =========================================================================
-    // UNIVERSAL MODAL EDIT SYSTEM (UNTUK SEMUA ROLE PENGURUS)
+    // LOGIKA PINTAR RONDA: PILIH AKUN TANPA BATAS & ABSENSI OTOMATIS
+    // =========================================================================
+    function renderDaftarAkunRonda() {
+      const container = document.getElementById('listCeklisAkunRonda');
+      if (!container || !db.users) return;
+
+      const akunList = db.users.filter(u => u.Role !== 'Admin');
+      if (akunList.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Belum ada akun warga terdaftar.</p>`;
+        return;
+      }
+
+      container.innerHTML = akunList.map(u => `
+        <label class="akun-ronda-item flex items-center justify-between p-2 bg-white hover:bg-emerald-50 rounded-lg border border-slate-200 cursor-pointer transition" data-search="${(u.Nama + ' ' + u.Blok_Rumah).toLowerCase()}">
+          <div class="flex items-center gap-2.5">
+            <input type="checkbox" name="petugasRondaCheck" value="${u.Nama}" onchange="updateCountPetugasRonda()" class="w-4 h-4 accent-emerald-600 rounded">
+            <div>
+              <p class="text-xs font-bold text-slate-800">${u.Nama}</p>
+              <p class="text-[10px] text-slate-400">${u.Blok_Rumah} • ${u.Role}</p>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-medium">${u.Blok_Rumah}</span>
+        </label>
+      `).join('');
+      updateCountPetugasRonda();
+    }
+
+    function filterDaftarAkunRonda() {
+      const q = document.getElementById('searchPetugasRonda').value.toLowerCase();
+      document.querySelectorAll('.akun-ronda-item').forEach(el => {
+        el.style.display = el.getAttribute('data-search').includes(q) ? 'flex' : 'none';
+      });
+    }
+
+    function updateCountPetugasRonda() {
+      const checked = document.querySelectorAll('input[name="petugasRondaCheck"]:checked').length;
+      document.getElementById('countPetugasTerpilih').innerText = `${checked} dipilih`;
+    }
+
+    function autoDetectHariRonda() {
+      const tglVal = document.getElementById('jrTgl').value;
+      if (!tglVal) return;
+      const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      const d = new Date(tglVal);
+      if (!isNaN(d)) {
+        document.getElementById('jrHari').value = hariIndo[d.getDay()];
+      }
+    }
+
+    function populateDropdownJadwalRonda() {
+      const sel = document.getElementById('arSelectJadwal');
+      if (!sel || !db.jadwalRonda) return;
+
+      if (db.jadwalRonda.length === 0) {
+        sel.innerHTML = `<option value="">-- Belum ada jadwal ronda dibuat --</option>`;
+        document.getElementById('arChecklistContainer').innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Silakan buat Jadwal Ronda di sebelah kiri terlebih dahulu.</p>`;
+        return;
+      }
+
+      sel.innerHTML = db.jadwalRonda.map(r => {
+        const list = extractPetugasArray(r);
+        return `<option value="${r.ID}">${r.Hari}, ${r.Tanggal} (${list.length} Petugas: ${list.slice(0,2).join(', ')}${list.length > 2 ? '...' : ''})</option>`;
+      }).join('');
+
+      renderChecklistPetugasRonda();
+    }
+
+    function renderChecklistPetugasRonda() {
+      const selId = document.getElementById('arSelectJadwal').value;
+      const container = document.getElementById('arChecklistContainer');
+      const jadwal = (db.jadwalRonda || []).find(r => r.ID === selId);
+
+      if (!jadwal) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Pilih jadwal ronda untuk memunculkan petugas.</p>`;
+        return;
+      }
+
+      document.getElementById('arTgl').value = jadwal.Tanggal;
+      const petugasList = extractPetugasArray(jadwal);
+      const statusOptions = [
+        { val: 'Hadir', color: 'peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600' },
+        { val: 'Izin', color: 'peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600' },
+        { val: 'Ganti Hari', color: 'peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500' },
+        { val: 'Sakit', color: 'peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600' },
+        { val: 'Alpa', color: 'peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600' }
+      ];
+
+      container.innerHTML = petugasList.map((nama, idx) => `
+        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-slate-800 text-white text-[10px] font-bold flex items-center justify-center">${idx + 1}</span>
+              <span class="font-bold text-xs text-slate-800">${nama}</span>
+            </div>
+            <span class="text-[10px] text-slate-400">Petugas Terjadwal</span>
+          </div>
+          <div class="grid grid-cols-5 gap-1">
+            ${statusOptions.map(opt => `
+              <label class="cursor-pointer text-center">
+                <input type="radio" name="statusRonda_${idx}" data-nama="${nama}" value="${opt.val}" ${opt.val === 'Hadir' ? 'checked' : ''} class="peer hidden">
+                <div class="py-1.5 px-1 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-600 hover:bg-slate-50 transition ${opt.color}">
+                  ${opt.val}
+                </div>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setAllStatusRonda(statusVal) {
+      document.querySelectorAll(`#arChecklistContainer input[type="radio"][value="${statusVal}"]`).forEach(radio => {
+        radio.checked = true;
+      });
+    }
+
+    // =========================================================================
+    // UNIVERSAL MODAL EDIT SYSTEM
     // =========================================================================
     function openEditModal(type, item) {
       const titleEl = document.getElementById('editModalTitle');
@@ -727,7 +900,9 @@
           <div><label class="text-xs font-bold text-slate-600">Alamat / Blok Rumah</label><input type="text" name="Alamat" value="${item.Alamat}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
         `;
       } else if (type === 'editJadwalRonda') {
-        titleEl.innerHTML = `<i class="fas fa-shield-alt text-amber-400 mr-2"></i>Edit Jadwal Ronda`;
+        titleEl.innerHTML = `<i class="fas fa-shield-alt text-amber-400 mr-2"></i>Edit Jadwal & Petugas Ronda`;
+        const currentPetugas = extractPetugasArray(item);
+        const akunList = (db.users || []).filter(u => u.Role !== 'Admin');
         html = `
           <input type="hidden" name="ID" value="${item.ID}">
           <div class="grid grid-cols-2 gap-3">
@@ -738,9 +913,20 @@
             </div>
             <div><label class="text-xs font-bold text-slate-600">Tanggal</label><input type="date" name="Tanggal" value="${item.Tanggal}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
           </div>
-          <div><label class="text-xs font-bold text-slate-600">Petugas 1</label><input type="text" name="Petugas_1" value="${item.Petugas_1}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
-          <div><label class="text-xs font-bold text-slate-600">Petugas 2</label><input type="text" name="Petugas_2" value="${item.Petugas_2}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
-          <div><label class="text-xs font-bold text-slate-600">Petugas 3</label><input type="text" name="Petugas_3" value="${item.Petugas_3 || ''}" class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
+          <div>
+            <label class="text-xs font-bold text-slate-600">Ceklis Petugas Ronda (Tanpa Batas):</label>
+            <div class="max-h-44 overflow-y-auto border rounded-xl p-2 mt-1 bg-slate-50 space-y-1">
+              ${akunList.map(u => `
+                <label class="flex items-center justify-between p-1.5 bg-white rounded border text-xs cursor-pointer">
+                  <span class="flex items-center gap-2 font-bold">
+                    <input type="checkbox" name="editPetugasCheck" value="${u.Nama}" ${currentPetugas.includes(u.Nama) ? 'checked' : ''} class="accent-amber-500">
+                    ${u.Nama}
+                  </span>
+                  <span class="text-[10px] text-slate-400">${u.Blok_Rumah}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
           <div><label class="text-xs font-bold text-slate-600">Keterangan</label><input type="text" name="Keterangan" value="${item.Keterangan || ''}" class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
         `;
       } else if (type === 'editAbsenRonda') {
@@ -751,7 +937,7 @@
           <div><label class="text-xs font-bold text-slate-600">Nama Petugas</label><input type="text" name="Nama_Petugas" value="${item.Nama_Petugas}" required class="w-full mt-1 px-3 py-2 border rounded-lg"></div>
           <div><label class="text-xs font-bold text-slate-600">Status Kehadiran</label>
             <select name="Status" class="w-full mt-1 px-3 py-2 border rounded-lg">
-              ${['Hadir', 'Izin', 'Alpa / Tidak Hadir'].map(s => `<option value="${s}" ${item.Status === s ? 'selected' : ''}>${s}</option>`).join('')}
+              ${['Hadir', 'Izin', 'Ganti Hari', 'Sakit', 'Alpa'].map(s => `<option value="${s}" ${item.Status === s ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
           </div>
         `;
@@ -831,6 +1017,15 @@
       const formData = new FormData(e.target);
       const payload = {};
       formData.forEach((value, key) => { payload[key] = value; });
+
+      if (currentEditAction === 'editJadwalRonda') {
+        const selected = Array.from(e.target.querySelectorAll('input[name="editPetugasCheck"]:checked')).map(cb => cb.value);
+        if (selected.length === 0) {
+          alert('Pilih minimal 1 petugas ronda!');
+          return;
+        }
+        payload.Petugas_List = selected.join(', ');
+      }
 
       const res = await callBackend(currentEditAction, payload);
       alert(res.message);
@@ -955,7 +1150,7 @@
     }
 
     // =========================================================================
-    // MUAT & RENDER SEMUA DATA DENGAN TOMBOL EDIT & HAPUS SESUAI HAK AKSES
+    // MUAT & RENDER SEMUA DATA
     // =========================================================================
     async function fetchAllData() {
       const res = await callBackend('getAllData');
@@ -988,7 +1183,7 @@
       document.getElementById('wInfoRek').innerText = p.No_Rekening || '-';
       document.getElementById('wInfoAN').innerText = 'a.n. ' + (p.Atas_Nama || '-');
 
-      // 1. TABEL USERS (Admin bisa edit semua; Sekretaris hanya bisa edit Warga)
+      // 1. TABEL USERS
       document.getElementById('tblUsers').innerHTML = db.users.map(u => {
         const canEdit = role === 'Admin' || (role === 'Sekretaris' && u.Role === 'Warga');
         const isSelf = u.Username === currentUser.Username;
@@ -1010,7 +1205,7 @@
       const wargaList = db.users.filter(u => u.Role === 'Warga');
       document.getElementById('bWargaSelect').innerHTML = `<option value="">-- Pilih Warga / Input Manual --</option>` + wargaList.map(w => `<option value="${w.Nama}" data-wa="${w.No_WA}">${w.Nama} (${w.Blok_Rumah})</option>`).join('');
 
-      // 2. TABEL PENDUDUK (Admin & Sekretaris bisa Edit & Hapus)
+      // 2. TABEL PENDUDUK
       document.getElementById('tblPenduduk').innerHTML = db.penduduk.map(d => {
         const cleanNIK = String(d.NIK).replace(/^'/, '');
         const cleanKK = String(d.No_KK).replace(/^'/, '');
@@ -1030,27 +1225,40 @@
         `;
       }).join('');
 
-      // 3. TABEL JADWAL RONDA (Ketua RT & Sekretaris bisa Edit & Hapus)
-      document.getElementById('tblJadwalRonda').innerHTML = db.jadwalRonda.map(r => `
-        <tr>
-          <td class="p-3 font-bold">${r.Hari}, ${r.Tanggal}</td>
-          <td class="p-3">${r.Petugas_1}</td>
-          <td class="p-3">${r.Petugas_2}</td>
-          <td class="p-3">${r.Petugas_3 || '-'}</td>
-          <td class="p-3 text-slate-500">${r.Keterangan}</td>
-          <td class="p-3 text-center space-x-1">
-            <button onclick='openEditModal("editJadwalRonda", ${esc(r)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
-            <button onclick='confirmDelete("deleteJadwalRonda", {ID: "${r.ID}"}, "Ronda ${r.Tanggal}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>
-          </td>
-        </tr>
-      `).join('');
+      // 3. RONDA: POPULATE AKUN TANPA BATAS & TABEL JADWAL RONDA
+      renderDaftarAkunRonda();
+      populateDropdownJadwalRonda();
 
-      // 4. TABEL ABSEN RONDA (Admin, Ketua RT, Sekretaris bisa Edit & Hapus)
+      document.getElementById('tblJadwalRonda').innerHTML = db.jadwalRonda.map(r => {
+        const petugasBadges = extractPetugasArray(r).map(nama =>
+          `<span class="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-xs font-semibold mr-1 mb-1">${nama}</span>`
+        ).join('');
+        return `
+          <tr>
+            <td class="p-3 font-bold whitespace-nowrap">${r.Hari}, ${r.Tanggal}</td>
+            <td class="p-3">${petugasBadges || '-'}</td>
+            <td class="p-3 text-slate-500">${r.Keterangan}</td>
+            <td class="p-3 text-center space-x-1 whitespace-nowrap">
+              <button onclick='openEditModal("editJadwalRonda", ${esc(r)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
+              <button onclick='confirmDelete("deleteJadwalRonda", {ID: "${r.ID}"}, "Ronda ${r.Tanggal}")' class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // 4. TABEL REKAP ABSEN RONDA DENGAN BADGE WARNA STATUS
+      const badgeStatusRonda = {
+        'Hadir': 'bg-emerald-100 text-emerald-700',
+        'Izin': 'bg-blue-100 text-blue-700',
+        'Ganti Hari': 'bg-amber-100 text-amber-800',
+        'Sakit': 'bg-purple-100 text-purple-700',
+        'Alpa': 'bg-rose-100 text-rose-700'
+      };
       document.getElementById('tblAbsenRonda').innerHTML = db.absenRonda.map(a => `
         <tr>
           <td class="p-3">${a.Tanggal}</td>
           <td class="p-3 font-bold">${a.Nama_Petugas}</td>
-          <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${a.Status === 'Hadir' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${a.Status}</span></td>
+          <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeStatusRonda[a.Status] || 'bg-slate-100 text-slate-700'}">${a.Status}</span></td>
           <td class="p-3 text-slate-500">${a.Dicatat_Oleh}</td>
           <td class="p-3 text-center space-x-1">
             <button onclick='openEditModal("editAbsenRonda", ${esc(a)})' class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold"><i class="fas fa-edit"></i> Edit</button>
@@ -1059,7 +1267,7 @@
         </tr>
       `).join('');
 
-      // 5. TABEL JADWAL RAPAT (Ketua RT & Sekretaris bisa Edit & Hapus)
+      // 5. TABEL JADWAL RAPAT
       document.getElementById('tblJadwalRapat').innerHTML = db.jadwalRapat.map(rp => `
         <tr>
           <td class="p-3 font-bold">${rp.Tanggal} (${rp.Waktu})</td>
@@ -1074,7 +1282,7 @@
 
       document.getElementById('arpSelectRapat').innerHTML = db.jadwalRapat.map(rp => `<option value="${rp.ID}|${rp.Agenda}">${rp.Tanggal} - ${rp.Agenda}</option>`).join('');
 
-      // 6. TABEL ABSEN RAPAT (Ketua RT bisa Edit & Hapus)
+      // 6. TABEL ABSEN RAPAT
       document.getElementById('tblAbsenRapat').innerHTML = db.absenRapat.map(ar => `
         <tr>
           <td class="p-3 font-medium">${ar.Agenda}</td>
@@ -1355,29 +1563,43 @@
       fetchAllData();
     }
 
+    // SIMPAN JADWAL RONDA (PETUGAS TANPA BATAS)
     async function saveJadwalRonda(e) {
       e.preventDefault();
+      const selectedPetugas = Array.from(document.querySelectorAll('input[name="petugasRondaCheck"]:checked')).map(cb => cb.value);
+      if (selectedPetugas.length === 0) {
+        alert('Silakan ceklis minimal 1 nama petugas ronda!');
+        return;
+      }
       await callBackend('addJadwalRonda', {
         Hari: document.getElementById('jrHari').value,
         Tanggal: document.getElementById('jrTgl').value,
-        Petugas_1: document.getElementById('jrP1').value,
-        Petugas_2: document.getElementById('jrP2').value,
-        Petugas_3: document.getElementById('jrP3').value,
+        Petugas_List: selectedPetugas.join(', '),
         Keterangan: document.getElementById('jrKet').value
       });
       e.target.reset();
       fetchAllData();
     }
 
-    async function saveAbsenRonda(e) {
+    // SIMPAN BATCH ABSENSI PETUGAS RONDA SEKALI KLIK
+    async function saveBatchAbsenRonda(e) {
       e.preventDefault();
-      await callBackend('addAbsenRonda', {
+      const radios = document.querySelectorAll('#arChecklistContainer input[type="radio"]:checked');
+      if (radios.length === 0) {
+        alert('Tidak ada daftar petugas ronda yang dipilih!');
+        return;
+      }
+      const items = Array.from(radios).map(r => ({
+        Nama_Petugas: r.getAttribute('data-nama'),
+        Status: r.value
+      }));
+
+      const res = await callBackend('addBatchAbsenRonda', {
         Tanggal: document.getElementById('arTgl').value,
-        Nama_Petugas: document.getElementById('arNama').value,
-        Status: document.getElementById('arStatus').value,
+        items: items,
         Dicatat_Oleh: `${currentUser.Nama} (${currentUser.Role})`
       });
-      e.target.reset();
+      alert(res.message);
       fetchAllData();
     }
 
