@@ -25,7 +25,7 @@
     </div>
   </div>
 
-  <!-- MODAL KUITANSI / STRUK DIGITAL (BISA UNDUH GAMBAR PNG & KIRIM WA) -->
+  <!-- MODAL KUITANSI / STRUK DIGITAL -->
   <div id="modalKuitansi" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-40 p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
       <div id="printArea" class="p-6 bg-white border-b border-dashed border-slate-300">
@@ -164,7 +164,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Tabel Pemasukan -->
           <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
             <div class="p-4 border-b font-bold text-emerald-700 flex items-center gap-2">
               <i class="fas fa-arrow-down"></i> Rincian Kas Masuk (Iuran, Sumbangan, Denda)
@@ -177,7 +176,6 @@
             </table>
           </div>
 
-          <!-- Tabel Pengeluaran -->
           <div class="bg-white rounded-2xl shadow-xs border overflow-x-auto">
             <div class="p-4 border-b font-bold text-rose-700 flex items-center gap-2">
               <i class="fas fa-arrow-up"></i> Rincian Kas Keluar (Pengeluaran)
@@ -392,7 +390,6 @@
       <!-- 7. VIEW: BENDAHARA - PEMASUKAN (IURAN, SUMBANGAN, DENDA) & PENGELUARAN -->
       <section id="view-bendahara-iuran" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Form Pemasukan: Iuran, Sumbangan, Denda -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-hand-holding-usd text-emerald-600 mr-2"></i>Terima Pemasukan & Kuitansi Gambar</h3>
             <form onsubmit="saveIuranBendahara(event)" class="space-y-3">
@@ -429,7 +426,6 @@
             </form>
           </div>
 
-          <!-- Form Pengeluaran Kas Manual -->
           <div class="bg-white p-6 rounded-2xl shadow-xs border">
             <h3 class="font-bold text-lg mb-4"><i class="fas fa-shopping-cart text-rose-600 mr-2"></i>Catat Pengeluaran Kas Manual</h3>
             <form onsubmit="savePengeluaranManual(event)" class="space-y-3">
@@ -463,7 +459,6 @@
               </button>
             </form>
 
-            <!-- Setting Rekening Transfer -->
             <div class="mt-6 pt-6 border-t">
               <h4 class="font-bold text-sm mb-3 text-blue-700"><i class="fas fa-university mr-1"></i>Pengaturan Rekening Transfer Warga</h4>
               <form onsubmit="saveRekening(event)" class="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -477,7 +472,7 @@
         </div>
       </section>
 
-      <!-- 8. VIEW: REKAP IURAN BULANAN & TAHUNAN (ADMIN, KETUA RT, BENDAHARA) -->
+      <!-- 8. VIEW: REKAP IURAN BULANAN & TAHUNAN -->
       <section id="view-rekap-iuran" class="view-panel hidden space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="bg-white p-5 rounded-2xl border shadow-xs">
@@ -559,7 +554,7 @@
 
   <script>
     // =========================================================================
-    // TEMPELKAN URL WEB APP (/exec) GOOGLE APPS SCRIPT ANDA DI BAWAH INI:
+    // URL WEB APP GOOGLE APPS SCRIPT ANDA (SUDAH TERPASANG BENAR)
     // =========================================================================
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbykGoQtIBw_GaFMSILafy6a-7xe31XeOy6RfqCr8hsSmglfElSe3IvB-lHkJgoipL46/exec";
 
@@ -569,41 +564,26 @@
     function callBackend(action, payload = {}) {
       document.getElementById('loader').style.display = 'flex';
       return new Promise((resolve, reject) => {
-        if (typeof google !== 'undefined' && google.script && google.script.run && (!GAS_API_URL || GAS_API_URL === "https://script.google.com/macros/s/AKfycbykGoQtIBw_GaFMSILafy6a-7xe31XeOy6RfqCr8hsSmglfElSe3IvB-lHkJgoipL46/exec")) {
-          google.script.run
-            .withSuccessHandler(res => { document.getElementById('loader').style.display = 'none'; resolve(res); })
-            .withFailureHandler(err => { document.getElementById('loader').style.display = 'none'; alert(err); reject(err); })
-            [action === 'getAllData' ? 'getAllData' : action === 'login' ? 'loginUser' : action](
-              ...(action === 'login' ? [payload.username, payload.password] : [payload])
-            );
-        } else {
-          if (!GAS_API_URL || GAS_API_URL === "https://script.google.com/macros/s/AKfycbykGoQtIBw_GaFMSILafy6a-7xe31XeOy6RfqCr8hsSmglfElSe3IvB-lHkJgoipL46/exec") {
+        const url = `${GAS_API_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(payload))}`;
+        
+        fetch(url, { method: 'GET', redirect: 'follow' })
+          .then(r => r.text())
+          .then(text => {
             document.getElementById('loader').style.display = 'none';
-            alert("URL Google Apps Script belum diisi pada variabel GAS_API_URL di index.html!");
-            return reject("Missing GAS_API_URL");
-          }
-
-          const url = `${GAS_API_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(payload))}`;
-          
-          fetch(url, { method: 'GET', redirect: 'follow' })
-            .then(r => r.text())
-            .then(text => {
-              document.getElementById('loader').style.display = 'none';
-              try {
-                const res = JSON.parse(text);
-                resolve(res);
-              } catch (e) {
-                console.error("Respon mentah dari Google:", text);
-                alert("Gagal membaca JSON dari Google. Pastikan Anda sudah memilih 'New Version' saat Deploy di Apps Script!");
-                reject(e);
-              }
-            })
-            .catch(err => {
-              document.getElementById('loader').style.display = 'none';
-              alert('Koneksi jaringan gagal: ' + err);
-              reject(err);
-            });
-        }
+            try {
+              const res = JSON.parse(text);
+              resolve(res);
+            } catch (e) {
+              console.error("Respon mentah dari Google:", text);
+              alert("Gagal membaca JSON dari Google. Pastikan di Apps Script sudah Deploy > New Version!");
+              reject(e);
+            }
+          })
+          .catch(err => {
+            document.getElementById('loader').style.display = 'none';
+            alert('Koneksi jaringan gagal: ' + err);
+            reject(err);
+          });
       });
     }
 
@@ -633,14 +613,13 @@
       document.getElementById('loginPage').classList.remove('hidden');
     }
 
-    // SETUP MENU SIDEBAR KIRI BERDASARKAN ROLE + ARUS KAS + UBAH PASSWORD
+    // SETUP MENU SIDEBAR KIRI BERDASARKAN ROLE
     function setupSidebarByRole() {
       const role = currentUser.Role;
       document.getElementById('sideUserName').innerText = currentUser.Nama;
       document.getElementById('sideUserRole').innerText = role;
       document.getElementById('sideUserBlok').innerText = currentUser.Blok_Rumah;
 
-      // Menu Arus Kas tampil di SEMUA akun
       const menus = [
         { id: 'arus-kas', icon: 'fa-chart-pie', label: 'Arus Kas RT (Transparan)' }
       ];
@@ -680,7 +659,6 @@
         );
       }
 
-      // Menu Ubah Password tampil di SEMUA akun
       menus.push({ id: 'password', icon: 'fa-key', label: 'Ubah Password' });
 
       const roleSelect = document.getElementById('uRole');
@@ -776,7 +754,6 @@
       renderDiskusi();
     }
 
-    // RENDER ARUS KAS TRANSPARAN (UNTUK SEMUA AKUN)
     function renderArusKas() {
       const pemasukanList = db.iuran || [];
       const pengeluaranList = db.pengeluaran || [];
@@ -883,7 +860,6 @@
       `).join('');
     }
 
-    // MODAL KUITANSI & UNDUH GAMBAR PNG
     function bukaKuitansi(k) {
       const p = db.profil || {};
       document.getElementById('kLogo').src = p.Logo_URL || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png';
@@ -929,7 +905,6 @@
       document.getElementById('modalKuitansi').style.display = 'none';
     }
 
-    // HANDLER UBAH PASSWORD MANDIRI
     async function saveNewPassword(e) {
       e.preventDefault();
       const oldP = document.getElementById('pwdOld').value;
@@ -953,7 +928,6 @@
       }
     }
 
-    // HANDLER SIMPAN FORM LAINNYA
     async function saveProfil(e) {
       e.preventDefault();
       await callBackend('updateProfil', {
